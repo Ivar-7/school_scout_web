@@ -1,3 +1,5 @@
+import { initializeApp } from 'firebase/app';
+
 const requiredKeys = [
   'VITE_FIREBASE_API_KEY',
   'VITE_FIREBASE_AUTH_DOMAIN',
@@ -5,20 +7,21 @@ const requiredKeys = [
   'VITE_FIREBASE_STORAGE_BUCKET',
   'VITE_FIREBASE_MESSAGING_SENDER_ID',
   'VITE_FIREBASE_APP_ID',
-] as const
+] as const;
 
-type FirebaseEnvKey = (typeof requiredKeys)[number]
+type FirebaseEnvKey = (typeof requiredKeys)[number];
 
-function getEnvValue(key: FirebaseEnvKey) {
-  const value = import.meta.env[key]
+function getEnvValue(key: FirebaseEnvKey): string {
+  const value = import.meta.env[key];
 
   if (!value) {
-    throw new Error(`Missing Firebase environment variable: ${key}`)
+    throw new Error(`Missing Firebase environment variable: ${key}. Make sure it is defined in your .env file.`);
   }
 
-  return value
+  return value;
 }
 
+// 1. Dynamic type-safe configuration mapping
 export const firebaseEnv = {
   apiKey: getEnvValue('VITE_FIREBASE_API_KEY'),
   authDomain: getEnvValue('VITE_FIREBASE_AUTH_DOMAIN'),
@@ -29,4 +32,7 @@ export const firebaseEnv = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
   databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
   functionsRegion: import.meta.env.VITE_FIREBASE_FUNCTIONS_REGION || 'us-central1',
-} as const
+} as const;
+
+// 2. Initialize Firebase using the environment-injected config
+export const app = initializeApp(firebaseEnv);
