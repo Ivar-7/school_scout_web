@@ -8,18 +8,16 @@ import {
   markNotificationRead,
   markAllNotificationsRead,
   deleteNotification,
-} from '../services/utilities.service';
-import type { ShortlistedSchool } from '../types/utilities.types';
+} from '../services/utilities.service'
+import type { ShortlistedSchool } from '../types/utilities.types'
 
 export const utilitiesApi = {
   shortlist: {
     getAll: (userId: string) => fetchShortlist(userId),
-    isAdded: (userId: string, schoolId: string) =>
-      isSchoolShortlisted(userId, schoolId),
+    isAdded: (userId: string, schoolId: string) => isSchoolShortlisted(userId, schoolId),
     add: (userId: string, school: Omit<ShortlistedSchool, 'savedAt'>) =>
       addToShortlist(userId, school),
-    remove: (userId: string, schoolId: string) =>
-      removeFromShortlist(userId, schoolId),
+    remove: (userId: string, schoolId: string) => removeFromShortlist(userId, schoolId),
     clear: (userId: string) => clearShortlist(userId),
   },
   notifications: {
@@ -27,7 +25,6 @@ export const utilitiesApi = {
     markRead: (userId: string, notificationId: string) =>
       markNotificationRead(userId, notificationId),
     markAllRead: (userId: string) => markAllNotificationsRead(userId),
-    delete: (userId: string, notificationId: string) =>
-      deleteNotification(userId, notificationId),
+    delete: (userId: string, notificationId: string) => deleteNotification(userId, notificationId),
   },
-};
+}

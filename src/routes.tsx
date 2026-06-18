@@ -1,13 +1,17 @@
 import { lazy, Suspense } from 'react'
 import { Navigate, RouterProvider, createBrowserRouter } from 'react-router-dom'
-import { AppProviders } from './shared/providers/AppProviders'
+import { AppProviders } from './app/providers/AppProviders'
 import RootLayout from './app/layouts/RootLayout'
+import { ProtectedRoute } from './features/auth/components/ProtectedRoute'
+import { RoleRoute } from './features/auth/components/RoleRoute'
 
 const HomePage = lazy(() => import('./app/pages/HomePage'))
+const NotFoundPage = lazy(() => import('./app/pages/NotFoundPage'))
 const LoginPage = lazy(() => import('./features/auth/pages/LoginPage'))
 const RegisterPage = lazy(() => import('./features/auth/pages/RegisterPage'))
 const SchoolsPage = lazy(() => import('./features/schools/pages/SchoolsPage'))
 const SchoolDetailsPage = lazy(() => import('./features/schools/pages/SchoolDetailsPage'))
+const ComparePage = lazy(() => import('./features/schools/pages/ComparePage'))
 const FeesPage = lazy(() => import('./features/finance/pages/FeesPage'))
 const TransportRoutesPage = lazy(() => import('./features/finance/pages/TransportRoutesPage'))
 const MessagesPage = lazy(() => import('./features/communication/pages/MessagesPage'))
@@ -21,6 +25,7 @@ const SubscriptionsPage = lazy(() => import('./features/monetization/pages/Subsc
 const PaymentsPage = lazy(() => import('./features/monetization/pages/PaymentsPage'))
 const ShortlistsPage = lazy(() => import('./features/utilities/pages/ShortlistsPage'))
 const NotificationsPage = lazy(() => import('./features/utilities/pages/NotificationsPage'))
+const DashboardPage = lazy(() => import('./features/dashboard/pages/DashboardPage'))
 
 const router = createBrowserRouter([
   {
@@ -40,6 +45,7 @@ const router = createBrowserRouter([
         path: 'schools',
         children: [
           { index: true, element: <SchoolsPage /> },
+          { path: 'compare', element: <ComparePage /> },
           { path: ':schoolId', element: <SchoolDetailsPage /> },
         ],
       },
@@ -51,20 +57,6 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path: 'communication',
-        children: [
-          { path: 'messages', element: <MessagesPage /> },
-          { path: 'visits', element: <VisitsPage /> },
-        ],
-      },
-      {
-        path: 'applications',
-        children: [
-          { index: true, element: <ApplicationsPage /> },
-          { path: 'admission-forms', element: <AdmissionFormsPage /> },
-        ],
-      },
-      {
         path: 'social',
         children: [
           { path: 'reviews', element: <ReviewsPage /> },
@@ -73,27 +65,52 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path: 'monetization',
+        // Everything below requires sign-in.
+        element: <ProtectedRoute />,
         children: [
-          { path: 'subscriptions', element: <SubscriptionsPage /> },
-          { path: 'payments', element: <PaymentsPage /> },
+          {
+            path: 'communication',
+            children: [
+              { path: 'messages', element: <MessagesPage /> },
+              { path: 'visits', element: <VisitsPage /> },
+            ],
+          },
+          {
+            path: 'applications',
+            children: [
+              { index: true, element: <ApplicationsPage /> },
+              { path: 'admission-forms', element: <AdmissionFormsPage /> },
+            ],
+          },
+          {
+            path: 'monetization',
+            children: [
+              { path: 'subscriptions', element: <SubscriptionsPage /> },
+              { path: 'payments', element: <PaymentsPage /> },
+            ],
+          },
+          {
+            path: 'utilities',
+            children: [
+              { path: 'shortlists', element: <ShortlistsPage /> },
+              { path: 'notifications', element: <NotificationsPage /> },
+            ],
+          },
         ],
       },
       {
-        path: 'utilities',
-        children: [
-          { path: 'shortlists', element: <ShortlistsPage /> },
-          { path: 'notifications', element: <NotificationsPage /> },
-        ],
+        // School-role only.
+        element: <RoleRoute role="school" />,
+        children: [{ path: 'dashboard', element: <DashboardPage /> }],
       },
-      { path: '*', element: <Navigate to="/" replace /> },
+      { path: '*', element: <NotFoundPage /> },
     ],
   },
 ])
 
 function RouteFallback() {
   return (
-    <div className="flex min-h-screen items-center justify-center px-6 text-sm text-slate-600">
+    <div className="flex min-h-screen items-center justify-center px-6 text-sm text-muted">
       Loading route shell...
     </div>
   )

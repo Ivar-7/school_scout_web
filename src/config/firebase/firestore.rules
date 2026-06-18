@@ -1,0 +1,126 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    function onlyChanged(keys) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys);
+    }
+
+    // ── users/{uid} — private profile, owner only ──────────────────────────────
+    match /users/{uid} {
+      allow read, create, update: if isOwner(uid);
+      allow delete: if false;
+
+      match /shortlists/{schoolId} {
+        allow read, write: if isOwner(uid);
+      }
+
+      match /notifications/{notificationId} {
+        allow read: if isOwner(uid);
+        allow update: if isOwner(uid) && onlyChanged(['isRead']);
+        allow delete: if isOwner(uid);
+        allow create: if false; // server-created only (Cloud Functions, Admin SDK)
+      }
+    }
+
+    // ── schools/{schoolId} — public directory, owner-managed ───────────────────
+    match /schools/{schoolId} {
+      allow read: if true;
+      allow create: if isSignedIn() && request.resource.data.ownerId == request.auth.uid;
+      allow update, delete: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+
+      match /reviews/{reviewId} {
+        allow read: if true;
+        allow create: if isSignedIn() && request.resource.data.parentId == request.auth.uid;
+        allow update: if isSignedIn() && (
+          resource.data.parentId == request.auth.uid ||
+          (get(/databases/$(database)/documents/schools/$(schoolId)).data.ownerId == request.auth.uid &&
+           onlyChanged(['schoolReply']))
+        );
+        allow delete: if isSignedIn() && resource.data.parentId == request.auth.uid;
+      }
+
+      match /announcements/{announcementId} {
+        allow read: if true;
+        allow write: if isSignedIn() &&
+          get(/databases/$(database)/documents/schools/$(schoolId)).data.ownerId == request.auth.uid;
+      }
+
+      match /academics/{yearId} {
+        allow read: if true;
+        allow write: if isSignedIn() &&
+          get(/databases/$(database)/documents/schools/$(schoolId)).data.ownerId == request.auth.uid;
+      }
+
+      match /questions/{questionId} {
+        allow read: if true;
+        allow create: if isSignedIn() && request.resource.data.askedBy == request.auth.uid;
+        allow update: if isSignedIn() &&
+          get(/databases/$(database)/documents/schools/$(schoolId)).data.ownerId == request.auth.uid &&
+          onlyChanged(['answer', 'answeredAt']);
+        allow delete: if isSignedIn() && resource.data.askedBy == request.auth.uid;
+      }
+    }
+
+    // ── applications/{id} — applicant + the school they applied to ─────────────
+    match /applications/{applicationId} {
+      allow read: if isSignedIn() &&
+        (request.auth.uid == resource.data.parentId || request.auth.uid == resource.data.schoolOwnerId);
+      allow create: if isSignedIn() && request.resource.data.parentId == request.auth.uid;
+      allow update: if isSignedIn() && (
+        (request.auth.uid == resource.data.schoolOwnerId &&
+         onlyChanged(['status', 'schoolNotes', 'updatedAt', 'reviewedAt'])) ||
+        (request.auth.uid == resource.data.parentId &&
+         onlyChanged(['parentMessage', 'updatedAt']))
+      );
+      allow delete: if false;
+    }
+
+    // ── subscriptions/{uid} & payments/{id} — read-only, written by Cloud Functions ──
+    match /subscriptions/{uid} {
+      allow read: if isOwner(uid);
+      allow write: if false;
+    }
+
+    match /payments/{paymentId} {
+      allow read: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow write: if false;
+    }
+
+    // ── threads/{id} & messages — the two participants only ────────────────────
+    match /threads/{threadId} {
+      allow read, update: if isSignedIn() && request.auth.uid in resource.data.participantIds;
+      allow create: if isSignedIn() && request.auth.uid in request.resource.data.participantIds;
+      allow delete: if false;
+
+      match /messages/{messageId} {
+        allow read: if isSignedIn() &&
+          request.auth.uid in get(/databases/$(database)/documents/threads/$(threadId)).data.participantIds;
+        allow create: if isSignedIn() &&
+          request.resource.data.senderId == request.auth.uid &&
+          request.auth.uid in get(/databases/$(database)/documents/threads/$(threadId)).data.participantIds;
+        allow update, delete: if false;
+      }
+    }
+
+    // ── visitBookings/{id} — the parent + the school they're visiting ──────────
+    match /visitBookings/{bookingId} {
+      allow read: if isSignedIn() &&
+        (request.auth.uid == resource.data.parentId || request.auth.uid == resource.data.schoolOwnerId);
+      allow create: if isSignedIn() && request.resource.data.parentId == request.auth.uid;
+      allow update: if isSignedIn() &&
+        (request.auth.uid == resource.data.parentId || request.auth.uid == resource.data.schoolOwnerId) &&
+        onlyChanged(['status', 'notes', 'updatedAt']);
+      allow delete: if false;
+    }
+  }
+}

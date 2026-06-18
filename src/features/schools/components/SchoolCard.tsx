@@ -1,13 +1,13 @@
-import { Heart, MapPin, Star, CheckCircle } from 'lucide-react';
-import type { School } from '../types/schools.types';
+import { Heart, MapPin, Star, CheckCircle } from 'lucide-react'
+import type { School } from '../types/schools.types'
 
 interface SchoolCardProps {
-  school: School;
-  onShortlist?: (school: School) => void;
-  isShortlisted?: boolean;
-  onCompare?: (school: School) => void;
-  isCompared?: boolean;
-  variant?: 'grid' | 'list';
+  school: School
+  onShortlist?: (school: School) => void
+  isShortlisted?: boolean
+  onCompare?: (school: School) => void
+  isCompared?: boolean
+  variant?: 'grid' | 'list'
 }
 
 export const SchoolCard = ({
@@ -18,7 +18,7 @@ export const SchoolCard = ({
   isCompared = false,
   variant = 'grid',
 }: SchoolCardProps) => {
-  const formatFee = (amount: number) => `KES ${amount.toLocaleString()}`;
+  const formatFee = (amount: number) => `KES ${amount.toLocaleString()}`
 
   if (variant === 'list') {
     return (
@@ -46,9 +46,7 @@ export const SchoolCard = ({
                 <h3 className="font-heading font-semibold text-gray-900 text-base leading-tight">
                   {school.name}
                 </h3>
-                {school.isVerified && (
-                  <CheckCircle className="w-4 h-4 text-green-600 shrink-0" />
-                )}
+                {school.isVerified && <CheckCircle className="w-4 h-4 text-green-600 shrink-0" />}
               </div>
               <button
                 onClick={() => onShortlist?.(school)}
@@ -61,12 +59,17 @@ export const SchoolCard = ({
 
             <div className="flex items-center gap-1 text-gray-500 text-sm mt-1">
               <MapPin className="w-3.5 h-3.5" />
-              <span>{school.town}, {school.county}</span>
+              <span>
+                {school.town}, {school.county}
+              </span>
             </div>
 
             <div className="flex flex-wrap gap-1.5 mt-2">
-              {school.curriculum.map(c => (
-                <span key={c} className="bg-green-50 text-green-700 text-xs px-2 py-0.5 rounded-full font-medium">
+              {school.curriculum.map((c) => (
+                <span
+                  key={c}
+                  className="bg-green-50 text-green-700 text-xs px-2 py-0.5 rounded-full font-medium"
+                >
                   {c}
                 </span>
               ))}
@@ -80,7 +83,9 @@ export const SchoolCard = ({
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-1">
                 <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                <span className="text-sm font-semibold text-gray-800">{school.ratingAverage.toFixed(1)}</span>
+                <span className="text-sm font-semibold text-gray-800">
+                  {school.ratingAverage.toFixed(1)}
+                </span>
                 <span className="text-xs text-gray-400">({school.reviewCount})</span>
               </div>
               <span className="text-sm text-gray-600">
@@ -97,7 +102,7 @@ export const SchoolCard = ({
                 />
                 Compare
               </label>
-              
+
               <a
                 href={`/schools/${school.id}`}
                 className="bg-green-700 hover:bg-green-800 text-white text-sm font-medium px-4 py-1.5 rounded-lg transition-colors"
@@ -108,7 +113,7 @@ export const SchoolCard = ({
           </div>
         </div>
       </div>
-    );
+    )
   }
 
   // Grid variant
@@ -142,19 +147,22 @@ export const SchoolCard = ({
           <h3 className="font-heading font-semibold text-gray-900 text-base leading-tight flex-1">
             {school.name}
           </h3>
-          {school.isVerified && (
-            <CheckCircle className="w-4 h-4 text-green-600 shrink-0 mt-0.5" />
-          )}
+          {school.isVerified && <CheckCircle className="w-4 h-4 text-green-600 shrink-0 mt-0.5" />}
         </div>
 
         <div className="flex items-center gap-1 text-gray-500 text-sm mt-1">
           <MapPin className="w-3.5 h-3.5" />
-          <span>{school.town}, {school.county}</span>
+          <span>
+            {school.town}, {school.county}
+          </span>
         </div>
 
         <div className="flex flex-wrap gap-1.5 mt-2">
-          {school.curriculum.slice(0, 2).map(c => (
-            <span key={c} className="bg-green-50 text-green-700 text-xs px-2 py-0.5 rounded-full font-medium">
+          {school.curriculum.slice(0, 2).map((c) => (
+            <span
+              key={c}
+              className="bg-green-50 text-green-700 text-xs px-2 py-0.5 rounded-full font-medium"
+            >
               {c}
             </span>
           ))}
@@ -166,7 +174,9 @@ export const SchoolCard = ({
         <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
           <div className="flex items-center gap-1">
             <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-            <span className="text-sm font-semibold text-gray-800">{school.ratingAverage.toFixed(1)}</span>
+            <span className="text-sm font-semibold text-gray-800">
+              {school.ratingAverage.toFixed(1)}
+            </span>
             <span className="text-xs text-gray-400">({school.reviewCount})</span>
           </div>
           <span className="text-xs text-gray-500">
@@ -184,7 +194,7 @@ export const SchoolCard = ({
             />
             Compare
           </label>
-          
+
           <a
             href={`/schools/${school.id}`}
             className="bg-green-700 hover:bg-green-800 text-white text-sm font-medium px-4 py-1.5 rounded-lg transition-colors"
@@ -194,5 +204,5 @@ export const SchoolCard = ({
         </div>
       </div>
     </div>
-  );
-};
+  )
+}

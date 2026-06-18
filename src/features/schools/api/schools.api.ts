@@ -6,11 +6,18 @@ import {
   fetchNearbySchools,
   fetchReviews,
   submitReview,
+  replyToReview,
   fetchAnnouncements,
+  fetchAllAnnouncements,
+  createAnnouncement,
+  deleteAnnouncement,
   fetchAcademicRecords,
-} from '../services/schools.service';
-import type { SchoolFilters, Review } from '../types/schools.types';
-import type { DocumentSnapshot } from 'firebase/firestore';
+  fetchSchoolByOwner,
+  createSchool,
+  updateSchool,
+} from '../services/schools.service'
+import type { SchoolFilters, Review, Announcement, SchoolDraft } from '../types/schools.types'
+import type { DocumentSnapshot } from 'firebase/firestore'
 
 // All API calls wrapped here — components never call services directly
 
@@ -18,27 +25,41 @@ export const schoolsApi = {
   getAll: (filters?: Partial<SchoolFilters>, lastDoc?: DocumentSnapshot) =>
     fetchSchools(filters, lastDoc),
 
-  getById: (id: string) =>
-    fetchSchoolById(id),
+  getById: (id: string) => fetchSchoolById(id),
 
-  getBySlug: (slug: string) =>
-    fetchSchoolBySlug(slug),
+  getBySlug: (slug: string) => fetchSchoolBySlug(slug),
 
-  getFeatured: () =>
-    fetchFeaturedSchools(),
+  getFeatured: () => fetchFeaturedSchools(),
 
-  getNearby: (county: string, excludeId: string) =>
-    fetchNearbySchools(county, excludeId),
+  getNearby: (county: string, excludeId: string) => fetchNearbySchools(county, excludeId),
 
-  getReviews: (schoolId: string) =>
-    fetchReviews(schoolId),
+  getReviews: (schoolId: string) => fetchReviews(schoolId),
 
   submitReview: (schoolId: string, review: Omit<Review, 'id' | 'createdAt'>) =>
     submitReview(schoolId, review),
 
-  getAnnouncements: (schoolId: string) =>
-    fetchAnnouncements(schoolId),
+  replyToReview: (schoolId: string, reviewId: string, reply: string) =>
+    replyToReview(schoolId, reviewId, reply),
 
-  getAcademics: (schoolId: string) =>
-    fetchAcademicRecords(schoolId),
-};
+  getAnnouncements: (schoolId: string) => fetchAnnouncements(schoolId),
+
+  getAllAnnouncements: (schoolId: string) => fetchAllAnnouncements(schoolId),
+
+  createAnnouncement: (
+    schoolId: string,
+    schoolName: string,
+    schoolLogo: string,
+    announcement: Pick<Announcement, 'title' | 'category' | 'content' | 'status'>
+  ) => createAnnouncement(schoolId, schoolName, schoolLogo, announcement),
+
+  deleteAnnouncement: (schoolId: string, announcementId: string) =>
+    deleteAnnouncement(schoolId, announcementId),
+
+  getAcademics: (schoolId: string) => fetchAcademicRecords(schoolId),
+
+  getByOwner: (ownerId: string) => fetchSchoolByOwner(ownerId),
+
+  create: (ownerId: string, draft: SchoolDraft) => createSchool(ownerId, draft),
+
+  update: (schoolId: string, updates: Partial<SchoolDraft>) => updateSchool(schoolId, updates),
+}

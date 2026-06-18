@@ -1,41 +1,28 @@
 import {
   fetchSubscription,
-  createOrUpdateSubscription,
+  subscribeToSubscription,
   cancelSubscription,
   fetchPayments,
-  createPayment,
-  updatePaymentStatus,
-} from '../services/monetization.service';
-import type {
-  SubscriptionTier,
-  UserRole,
-} from '../types/monetization.types';
+  startSubscriptionPayment,
+  checkPaymentStatus,
+} from '../services/monetization.service'
+import type { SubscriptionTier, UserRole } from '../types/monetization.types'
 
 export const monetizationApi = {
   subscription: {
     get: (userId: string) => fetchSubscription(userId),
-    createOrUpdate: (
-      userId: string,
-      role: UserRole,
-      tier: SubscriptionTier,
-      mpesaPhone: string,
-      amount: number
-    ) => createOrUpdateSubscription(userId, role, tier, mpesaPhone, amount),
-    cancel: (userId: string) => cancelSubscription(userId),
+    subscribeToChanges: subscribeToSubscription,
+    cancel: () => cancelSubscription(),
   },
   payments: {
     getAll: (userId: string) => fetchPayments(userId),
-    create: (
-      userId: string,
+    start: (
       tier: SubscriptionTier,
+      role: UserRole,
       amount: number,
-      phone: string,
+      phoneNumber: string,
       description: string
-    ) => createPayment(userId, tier, amount, phone, description),
-    updateStatus: (
-      paymentId: string,
-      status: 'completed' | 'failed',
-      mpesaReceiptNumber?: string
-    ) => updatePaymentStatus(paymentId, status, mpesaReceiptNumber),
+    ) => startSubscriptionPayment(tier, role, amount, phoneNumber, description),
+    checkStatus: (paymentId: string) => checkPaymentStatus(paymentId),
   },
-};
+}

@@ -22,9 +22,9 @@ export default function HomePage() {
           Project architecture scaffold
         </h2>
         <p className="max-w-2xl text-base leading-7 text-slate-600 sm:text-lg">
-          This workspace now includes the routed app shell, Tailwind setup, and
-          a full feature directory tree. The non-model files are thin
-          placeholders so implementation can be filled in feature by feature.
+          This workspace now includes the routed app shell, Tailwind setup, and a full feature
+          directory tree. The non-model files are thin placeholders so implementation can be filled
+          in feature by feature.
         </p>
       </div>
 
@@ -36,9 +36,7 @@ export default function HomePage() {
             className="group rounded-3xl border border-slate-200 bg-white/90 p-5 shadow-xl transition-transform duration-200 hover:-translate-y-1"
           >
             <div className="flex items-center justify-between gap-4">
-              <span className="text-lg font-semibold text-slate-900">
-                {section.label}
-              </span>
+              <span className="text-lg font-semibold text-slate-900">{section.label}</span>
               <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium uppercase tracking-[0.25em] text-slate-500 transition-colors group-hover:bg-teal-600 group-hover:text-white">
                 Open
               </span>

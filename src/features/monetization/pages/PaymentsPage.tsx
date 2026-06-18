@@ -1,22 +1,22 @@
-import { usePayments } from '../hooks/useMonetization';
-import { Receipt, CheckCircle, XCircle, Clock } from 'lucide-react';
-import type { ElementType } from 'react';
+import { usePayments } from '../hooks/useMonetization'
+import { Receipt, CheckCircle, XCircle, Clock } from 'lucide-react'
+import type { ElementType } from 'react'
 
-type PaymentStatus = 'pending' | 'completed' | 'failed';
+type PaymentStatus = 'pending' | 'paid' | 'failed' | 'cancelled'
 
 interface StatusConfig {
-  icon: ElementType;
-  color: string;
-  bg: string;
-  label: string;
+  icon: ElementType
+  color: string
+  bg: string
+  label: string
 }
 
 const STATUS_CONFIG: Record<PaymentStatus, StatusConfig> = {
-  completed: {
+  paid: {
     icon: CheckCircle,
     color: 'text-green-600',
     bg: 'bg-green-50',
-    label: 'Completed',
+    label: 'Paid',
   },
   pending: {
     icon: Clock,
@@ -30,7 +30,13 @@ const STATUS_CONFIG: Record<PaymentStatus, StatusConfig> = {
     bg: 'bg-red-50',
     label: 'Failed',
   },
-};
+  cancelled: {
+    icon: XCircle,
+    color: 'text-gray-500',
+    bg: 'bg-gray-100',
+    label: 'Cancelled',
+  },
+}
 
 const SkeletonRow = () => (
   <div className="flex items-center gap-4 p-4 animate-pulse">
@@ -41,52 +47,42 @@ const SkeletonRow = () => (
     </div>
     <div className="h-4 bg-gray-200 rounded w-20" />
   </div>
-);
+)
 
 const EmptyState = () => (
   <div className="flex flex-col items-center justify-center py-24 text-center">
     <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
       <Receipt className="w-8 h-8 text-gray-400" />
     </div>
-    <h3 className="font-heading font-semibold text-gray-900 text-lg mb-2">
-      No payments yet
-    </h3>
+    <h3 className="font-heading font-semibold text-gray-900 text-lg mb-2">No payments yet</h3>
     <p className="text-gray-500 text-sm max-w-sm">
       Your payment history will appear here once you subscribe to a plan.
     </p>
   </div>
-);
+)
 
 export default function PaymentsPage() {
-  const { payments, loading, error } = usePayments();
+  const { payments, loading, error } = usePayments()
 
-  const formatDate = (
-    timestamp: { toDate?: () => Date } | null | undefined
-  ) => {
+  const formatDate = (timestamp: { toDate?: () => Date } | null | undefined) => {
     try {
-      return timestamp
-        ?.toDate?.()
-        .toLocaleDateString('en-KE', {
-          day: '2-digit',
-          month: 'short',
-          year: 'numeric',
-        });
+      return timestamp?.toDate?.().toLocaleDateString('en-KE', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      })
     } catch {
-      return '—';
+      return '—'
     }
-  };
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <h1 className="font-heading font-bold text-2xl text-gray-900">
-            Payment History
-          </h1>
-          <p className="text-sm text-gray-500 mt-0.5">
-            All your SchoolScout transactions
-          </p>
+          <h1 className="font-heading font-bold text-2xl text-gray-900">Payment History</h1>
+          <p className="text-sm text-gray-500 mt-0.5">All your SchoolScout transactions</p>
         </div>
       </div>
 
@@ -122,9 +118,9 @@ export default function PaymentsPage() {
               {/* Rows */}
               <div className="divide-y divide-gray-100">
                 {payments.map((payment) => {
-                  const status = payment.status as PaymentStatus;
-                  const config = STATUS_CONFIG[status] ?? STATUS_CONFIG.pending;
-                  const Icon = config.icon;
+                  const status = payment.status as PaymentStatus
+                  const config = STATUS_CONFIG[status] ?? STATUS_CONFIG.pending
+                  const Icon = config.icon
                   return (
                     <div
                       key={payment.id}
@@ -138,12 +134,10 @@ export default function PaymentsPage() {
                           <Icon className={`w-4 h-4 ${config.color}`} />
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-gray-900">
-                            {payment.description}
-                          </p>
-                          {payment.mpesaReceiptNumber && (
+                          <p className="text-sm font-medium text-gray-900">{payment.description}</p>
+                          {payment.checkoutRequestID && (
                             <p className="text-xs text-gray-400 mt-0.5">
-                              Ref: {payment.mpesaReceiptNumber}
+                              Ref: {payment.checkoutRequestID}
                             </p>
                           )}
                         </div>
@@ -170,12 +164,10 @@ export default function PaymentsPage() {
 
                       {/* Date */}
                       <div className="hidden sm:block">
-                        <p className="text-sm text-gray-500">
-                          {formatDate(payment.createdAt)}
-                        </p>
+                        <p className="text-sm text-gray-500">{formatDate(payment.createdAt)}</p>
                       </div>
                     </div>
-                  );
+                  )
                 })}
               </div>
             </>
@@ -183,5 +175,5 @@ export default function PaymentsPage() {
         </div>
       </div>
     </div>
-  );
+  )
 }

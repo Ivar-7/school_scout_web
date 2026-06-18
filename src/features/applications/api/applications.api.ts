@@ -5,21 +5,15 @@ import {
   submitApplication,
   updateApplicationStatus,
   hasApplied,
-} from '../services/applications.service';
-import type {
-  ApplicationFormData,
-  ApplicationStatus,
-} from '../types/applications.types';
+} from '../services/applications.service'
+import type { ApplicationFormData, ApplicationStatus } from '../types/applications.types'
 
 export const applicationsApi = {
-  getByParent: (parentId: string) =>
-    fetchParentApplications(parentId),
+  getByParent: (parentId: string) => fetchParentApplications(parentId),
 
-  getBySchool: (schoolId: string) =>
-    fetchSchoolApplications(schoolId),
+  getBySchool: (schoolId: string) => fetchSchoolApplications(schoolId),
 
-  getById: (id: string) =>
-    fetchApplicationById(id),
+  getById: (id: string) => fetchApplicationById(id),
 
   submit: (
     parentId: string,
@@ -29,12 +23,8 @@ export const applicationsApi = {
     formData: ApplicationFormData
   ) => submitApplication(parentId, parentName, parentEmail, parentPhone, formData),
 
-  updateStatus: (
-    applicationId: string,
-    status: ApplicationStatus,
-    schoolNotes?: string
-  ) => updateApplicationStatus(applicationId, status, schoolNotes),
+  updateStatus: (applicationId: string, status: ApplicationStatus, schoolNotes?: string) =>
+    updateApplicationStatus(applicationId, status, schoolNotes),
 
-  hasApplied: (parentId: string, schoolId: string) =>
-    hasApplied(parentId, schoolId),
-};
+  hasApplied: (parentId: string, schoolId: string) => hasApplied(parentId, schoolId),
+}

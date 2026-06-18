@@ -1,31 +1,29 @@
-import { School, Calendar, FileText, ChevronDown, ChevronUp } from 'lucide-react';
-import { useState } from 'react';
-import type { Application } from '../types/applications.types';
-import { STATUS_CONFIG } from '../types/applications.types';
+import { School, Calendar, FileText, ChevronDown, ChevronUp } from 'lucide-react'
+import { useState } from 'react'
+import type { Application } from '../types/applications.types'
+import { STATUS_CONFIG } from '../types/applications.types'
 
 interface ApplicationCardProps {
-  application: Application;
+  application: Application
 }
 
 export const ApplicationCard = ({ application }: ApplicationCardProps) => {
-  const [expanded, setExpanded] = useState(false);
-  const config = STATUS_CONFIG[application.status];
+  const [expanded, setExpanded] = useState(false)
+  const config = STATUS_CONFIG[application.status]
 
   const formatDate = (timestamp: Application['submittedAt']) => {
     try {
-      return timestamp
-        ?.toDate?.()
-        .toLocaleDateString('en-KE', {
-          day: '2-digit',
-          month: 'short',
-          year: 'numeric',
-        });
+      return timestamp?.toDate?.().toLocaleDateString('en-KE', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      })
     } catch {
-      return '—';
+      return '—'
     }
-  };
+  }
 
-  const schoolHref = `/schools/${application.schoolId}`;
+  const schoolHref = `/schools/${application.schoolId}`
 
   return (
     <div className="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm">
@@ -89,11 +87,7 @@ export const ApplicationCard = ({ application }: ApplicationCardProps) => {
           className="text-gray-400 hover:text-gray-600 transition-colors shrink-0"
           aria-label="Toggle details"
         >
-          {expanded ? (
-            <ChevronUp className="w-5 h-5" />
-          ) : (
-            <ChevronDown className="w-5 h-5" />
-          )}
+          {expanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
         </button>
       </div>
 
@@ -119,9 +113,7 @@ export const ApplicationCard = ({ application }: ApplicationCardProps) => {
               ].map(({ label, value }) => (
                 <div key={label}>
                   <p className="text-xs text-gray-400">{label}</p>
-                  <p className="text-sm text-gray-800 font-medium capitalize">
-                    {value}
-                  </p>
+                  <p className="text-sm text-gray-800 font-medium capitalize">{value}</p>
                 </div>
               ))}
             </div>
@@ -133,9 +125,7 @@ export const ApplicationCard = ({ application }: ApplicationCardProps) => {
               <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
                 Your Message
               </h4>
-              <p className="text-sm text-gray-700 leading-relaxed">
-                {application.parentMessage}
-              </p>
+              <p className="text-sm text-gray-700 leading-relaxed">{application.parentMessage}</p>
             </div>
           )}
 
@@ -147,7 +137,7 @@ export const ApplicationCard = ({ application }: ApplicationCardProps) => {
               </h4>
               <div className="space-y-2">
                 {application.documents.map((doc, i) => {
-                  const docHref = doc.url;
+                  const docHref = doc.url
                   return (
                     <div
                       key={i}
@@ -169,7 +159,7 @@ export const ApplicationCard = ({ application }: ApplicationCardProps) => {
                         View
                       </a>
                     </div>
-                  );
+                  )
                 })}
               </div>
             </div>
@@ -189,5 +179,5 @@ export const ApplicationCard = ({ application }: ApplicationCardProps) => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}

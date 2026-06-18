@@ -2,72 +2,45 @@ import {
   doc,
   getDoc,
   getDocs,
-  addDoc,
-  setDoc,
   collection,
   query,
   where,
   orderBy,
-  serverTimestamp,
-  Timestamp,
-} from 'firebase/firestore';
-import { firebaseFirestore } from '../../../shared/api/firebase/firebase.firestore';
+  onSnapshot,
+  type Unsubscribe,
+} from 'firebase/firestore'
+import { firebaseFirestore } from '../../../shared/api/firebase/firebase.firestore'
+import { callFunction } from '../../../shared/api/httpClient'
 import type {
   Subscription,
   Payment,
   SubscriptionTier,
   UserRole,
-} from '../types/monetization.types';
+  PaymentStatus,
+} from '../types/monetization.types'
 
-const SUBSCRIPTIONS = 'subscriptions';
-const PAYMENTS = 'payments';
+const SUBSCRIPTIONS = 'subscriptions'
+const PAYMENTS = 'payments'
 
-// ── Subscription ──────────────────────────────────────────────────────────────
+// ── Subscription (client: read-only — Cloud Functions own writes) ────────────
 
-export const fetchSubscription = async (
-  userId: string
-): Promise<Subscription | null> => {
-  const ref = doc(firebaseFirestore, SUBSCRIPTIONS, userId);
-  const snapshot = await getDoc(ref);
-  if (!snapshot.exists()) return null;
-  return snapshot.data() as Subscription;
-};
+export const fetchSubscription = async (userId: string): Promise<Subscription | null> => {
+  const ref = doc(firebaseFirestore, SUBSCRIPTIONS, userId)
+  const snapshot = await getDoc(ref)
+  if (!snapshot.exists()) return null
+  return snapshot.data() as Subscription
+}
 
-export const createOrUpdateSubscription = async (
+export const subscribeToSubscription = (
   userId: string,
-  role: UserRole,
-  tier: SubscriptionTier,
-  mpesaPhone: string,
-  amount: number
-): Promise<void> => {
-  const now = Timestamp.now();
-  const endDate = new Timestamp(
-    now.seconds + 30 * 24 * 60 * 60,
-    now.nanoseconds
-  );
+  onData: (subscription: Subscription | null) => void
+): Unsubscribe => {
+  return onSnapshot(doc(firebaseFirestore, SUBSCRIPTIONS, userId), (snapshot) => {
+    onData(snapshot.exists() ? (snapshot.data() as Subscription) : null)
+  })
+}
 
-  await setDoc(doc(firebaseFirestore, SUBSCRIPTIONS, userId), {
-    userId,
-    role,
-    tier,
-    status: 'active',
-    mpesaPhone,
-    amount,
-    startDate: now,
-    endDate,
-    autoRenew: true,
-    createdAt: now,
-    updatedAt: serverTimestamp(),
-  });
-};
-
-export const cancelSubscription = async (userId: string): Promise<void> => {
-  await setDoc(
-    doc(firebaseFirestore, SUBSCRIPTIONS, userId),
-    { status: 'cancelled', autoRenew: false, updatedAt: serverTimestamp() },
-    { merge: true }
-  );
-};
+export const cancelSubscription = (): Promise<void> => callFunction('cancelSubscription', {})
 
 // ── Payments ──────────────────────────────────────────────────────────────────
 
@@ -76,43 +49,32 @@ export const fetchPayments = async (userId: string): Promise<Payment[]> => {
     collection(firebaseFirestore, PAYMENTS),
     where('userId', '==', userId),
     orderBy('createdAt', 'desc')
-  );
-  const snapshot = await getDocs(q);
-  return snapshot.docs.map((d) => ({ id: d.id, ...d.data() })) as Payment[];
-};
+  )
+  const snapshot = await getDocs(q)
+  return snapshot.docs.map((d) => ({ id: d.id, ...d.data() })) as Payment[]
+}
 
-export const createPayment = async (
-  userId: string,
+interface StartPaymentResponse {
+  paymentId: string
+}
+
+export const startSubscriptionPayment = (
   tier: SubscriptionTier,
+  role: UserRole,
   amount: number,
-  phone: string,
+  phoneNumber: string,
   description: string
-): Promise<string> => {
-  const ref = await addDoc(collection(firebaseFirestore, PAYMENTS), {
-    userId,
-    subscriptionId: userId,
+): Promise<StartPaymentResponse> =>
+  callFunction('startPayheroPayment', {
     amount,
-    phone,
-    mpesaReceiptNumber: '',
-    status: 'pending',
-    tier,
+    phoneNumber,
     description,
-    createdAt: serverTimestamp(),
-  });
-  return ref.id;
-};
+    metadata: { type: 'subscription', tier, role },
+  })
 
-export const updatePaymentStatus = async (
-  paymentId: string,
-  status: 'completed' | 'failed',
-  mpesaReceiptNumber?: string
-): Promise<void> => {
-  await setDoc(
-    doc(firebaseFirestore, PAYMENTS, paymentId),
-    {
-      status,
-      ...(mpesaReceiptNumber && { mpesaReceiptNumber }),
-    },
-    { merge: true }
-  );
-};
+interface CheckStatusResponse {
+  status: PaymentStatus
+}
+
+export const checkPaymentStatus = (paymentId: string): Promise<CheckStatusResponse> =>
+  callFunction('checkPaymentStatus', { paymentId })

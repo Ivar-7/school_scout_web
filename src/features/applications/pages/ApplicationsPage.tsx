@@ -1,9 +1,10 @@
-import { useState } from 'react';
-import { useParentApplications } from '../hooks/useApplications';
-import { ApplicationCard } from '../components/ApplicationCard';
-import { ApplicationForm } from './AdmissionFormsPage';
-import { FileText, Plus, Search, X } from 'lucide-react';
-import type { ApplicationStatus } from '../types/applications.types';
+import { useState } from 'react'
+import { useParentApplications } from '../hooks/useApplications'
+import { useAuth } from '../../auth/hooks/useAuth'
+import { ApplicationCard } from '../components/ApplicationCard'
+import { ApplicationForm } from '../components/ApplicationForm'
+import { FileText, Plus, Search, X } from 'lucide-react'
+import type { ApplicationStatus } from '../types/applications.types'
 
 const SkeletonCard = () => (
   <div className="bg-white rounded-xl border border-gray-100 p-4 animate-pulse">
@@ -17,19 +18,16 @@ const SkeletonCard = () => (
       <div className="w-20 h-6 bg-gray-200 rounded-full" />
     </div>
   </div>
-);
+)
 
 const EmptyState = ({ onNew }: { onNew: () => void }) => (
   <div className="flex flex-col items-center justify-center py-24 text-center">
     <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mb-4">
       <FileText className="w-8 h-8 text-green-600" />
     </div>
-    <h3 className="font-heading font-semibold text-gray-900 text-lg mb-2">
-      No applications yet
-    </h3>
+    <h3 className="font-heading font-semibold text-gray-900 text-lg mb-2">No applications yet</h3>
     <p className="text-gray-500 text-sm max-w-sm mb-6">
-      Browse schools and apply directly through SchoolScout. Track all your
-      applications here.
+      Browse schools and apply directly through SchoolScout. Track all your applications here.
     </p>
     <div className="flex gap-3">
       <a
@@ -46,7 +44,7 @@ const EmptyState = ({ onNew }: { onNew: () => void }) => (
       </button>
     </div>
   </div>
-);
+)
 
 const STATUS_FILTERS: Array<{ key: 'all' | ApplicationStatus; label: string }> = [
   { key: 'all', label: 'All' },
@@ -55,32 +53,32 @@ const STATUS_FILTERS: Array<{ key: 'all' | ApplicationStatus; label: string }> =
   { key: 'accepted', label: 'Accepted' },
   { key: 'rejected', label: 'Rejected' },
   { key: 'more_info', label: 'More Info' },
-];
+]
 
 export default function ApplicationsPage() {
-  const { applications, loading, error, submitting, submit } =
-    useParentApplications();
+  const { user } = useAuth()
+  const { applications, loading, error, submitting, submit } = useParentApplications()
 
-  const [statusFilter, setStatusFilter] = useState<'all' | ApplicationStatus>('all');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [showForm, setShowForm] = useState(false);
-  const [prefilledSchoolId, setPrefilledSchoolId] = useState('');
-  const [prefilledSchoolName, setPrefilledSchoolName] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | ApplicationStatus>('all')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [showForm, setShowForm] = useState(false)
+  const [prefilledSchoolId, setPrefilledSchoolId] = useState('')
+  const [prefilledSchoolName, setPrefilledSchoolName] = useState('')
 
   const filtered = applications.filter((a) => {
-    const matchesStatus = statusFilter === 'all' || a.status === statusFilter;
+    const matchesStatus = statusFilter === 'all' || a.status === statusFilter
     const matchesSearch =
       a.schoolName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      a.studentName.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesStatus && matchesSearch;
-  });
+      a.studentName.toLowerCase().includes(searchQuery.toLowerCase())
+    return matchesStatus && matchesSearch
+  })
 
   const handleNewApplication = () => {
-    const params = new URLSearchParams(window.location.search);
-    setPrefilledSchoolId(params.get('schoolId') ?? '');
-    setPrefilledSchoolName(params.get('schoolName') ?? '');
-    setShowForm(true);
-  };
+    const params = new URLSearchParams(window.location.search)
+    setPrefilledSchoolId(params.get('schoolId') ?? '')
+    setPrefilledSchoolName(params.get('schoolName') ?? '')
+    setShowForm(true)
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -89,9 +87,7 @@ export default function ApplicationsPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <div>
-              <h1 className="font-heading font-bold text-2xl text-gray-900">
-                My Applications
-              </h1>
+              <h1 className="font-heading font-bold text-2xl text-gray-900">My Applications</h1>
               <p className="text-sm text-gray-500 mt-0.5">
                 {applications.length} application
                 {applications.length !== 1 ? 's' : ''}
@@ -135,7 +131,7 @@ export default function ApplicationsPage() {
                 const count =
                   f.key === 'all'
                     ? applications.length
-                    : applications.filter((a) => a.status === f.key).length;
+                    : applications.filter((a) => a.status === f.key).length
                 return (
                   <button
                     key={f.key}
@@ -159,7 +155,7 @@ export default function ApplicationsPage() {
                       </span>
                     )}
                   </button>
-                );
+                )
               })}
             </div>
           )}
@@ -182,15 +178,11 @@ export default function ApplicationsPage() {
           </div>
         )}
 
-        {!loading && applications.length === 0 && (
-          <EmptyState onNew={handleNewApplication} />
-        )}
+        {!loading && applications.length === 0 && <EmptyState onNew={handleNewApplication} />}
 
         {!loading && applications.length > 0 && filtered.length === 0 && (
           <div className="text-center py-16">
-            <p className="text-gray-500 text-sm">
-              No applications match your search.
-            </p>
+            <p className="text-gray-500 text-sm">No applications match your search.</p>
           </div>
         )}
 
@@ -205,14 +197,17 @@ export default function ApplicationsPage() {
 
       {/* Application form modal */}
       {showForm && (
-        <ApplicationForm
-          schoolId={prefilledSchoolId}
-          schoolName={prefilledSchoolName}
-          onClose={() => setShowForm(false)}
-          onSubmit={submit}
-          submitting={submitting}
-        />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <ApplicationForm
+            schoolId={prefilledSchoolId}
+            schoolName={prefilledSchoolName}
+            uid={user?.uid ?? ''}
+            onClose={() => setShowForm(false)}
+            onSubmit={submit}
+            submitting={submitting}
+          />
+        </div>
       )}
     </div>
-  );
+  )
 }

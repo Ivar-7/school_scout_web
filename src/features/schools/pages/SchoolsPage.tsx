@@ -1,21 +1,40 @@
-import { useState } from 'react';
-import { Search, SlidersHorizontal, Grid, List, X, ChevronDown } from 'lucide-react';
-import { useSchools } from '../hooks/useSchools';
-import { SchoolCard } from '../components/SchoolCard';
-import type { SchoolFilters, School } from '../types/schools.types';
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { Search, SlidersHorizontal, Grid, List, X, ChevronDown } from 'lucide-react'
+import { useSchools } from '../hooks/useSchools'
+import { SchoolCard } from '../components/SchoolCard'
+import { useAuth } from '../../auth/hooks/useAuth'
+import { useShortlist, toShortlistedSchool } from '../../utilities/hooks/useUtilities'
+import type { SchoolFilters, School } from '../types/schools.types'
 
 const KENYAN_COUNTIES = [
-  'Nairobi', 'Mombasa', 'Kisumu', 'Nakuru', 'Eldoret', 'Kiambu',
-  'Machakos', 'Nyeri', 'Meru', 'Kakamega', 'Kisii', 'Thika',
-  'Malindi', 'Garissa', 'Kitale', 'Bungoma', 'Kericho', 'Embu',
-  'Lamu', 'Isiolo',
-];
+  'Nairobi',
+  'Mombasa',
+  'Kisumu',
+  'Nakuru',
+  'Eldoret',
+  'Kiambu',
+  'Machakos',
+  'Nyeri',
+  'Meru',
+  'Kakamega',
+  'Kisii',
+  'Thika',
+  'Malindi',
+  'Garissa',
+  'Kitale',
+  'Bungoma',
+  'Kericho',
+  'Embu',
+  'Lamu',
+  'Isiolo',
+]
 
-const CURRICULA = ['CBC', 'IGCSE', 'A-Level', 'TVET'];
-const SCHOOL_TYPES = ['primary', 'secondary', 'ecd', 'university'];
-const GENDER_OPTIONS = ['mixed', 'boys', 'girls'];
-const BOARDING_OPTIONS = ['day', 'boarding', 'both'];
-const RELIGION_OPTIONS = ['secular', 'catholic', 'protestant', 'muslim', 'other'];
+const CURRICULA = ['CBC', 'IGCSE', 'A-Level', 'TVET']
+const SCHOOL_TYPES = ['primary', 'secondary', 'ecd', 'university']
+const GENDER_OPTIONS = ['mixed', 'boys', 'girls']
+const BOARDING_OPTIONS = ['day', 'boarding', 'both']
+const RELIGION_OPTIONS = ['secular', 'catholic', 'protestant', 'muslim', 'other']
 
 const DEFAULT_FILTERS: Partial<SchoolFilters> = {
   county: '',
@@ -27,7 +46,7 @@ const DEFAULT_FILTERS: Partial<SchoolFilters> = {
   minFee: 0,
   maxFee: 200000,
   specialNeedsSupport: false,
-};
+}
 
 // ── Skeleton ──────────────────────────────────────────────────────────────────
 const SchoolCardSkeleton = () => (
@@ -43,19 +62,19 @@ const SchoolCardSkeleton = () => (
       <div className="h-8 bg-gray-200 rounded w-full mt-2" />
     </div>
   </div>
-);
+)
 
 // ── Filter Sidebar ────────────────────────────────────────────────────────────
 interface FilterSidebarProps {
-  filters: Partial<SchoolFilters>;
-  onChange: (filters: Partial<SchoolFilters>) => void;
-  onReset: () => void;
-  onClose?: () => void;
+  filters: Partial<SchoolFilters>
+  onChange: (filters: Partial<SchoolFilters>) => void
+  onReset: () => void
+  onClose?: () => void
 }
 
 const FilterSidebar = ({ filters, onChange, onReset, onClose }: FilterSidebarProps) => {
   const update = (key: keyof SchoolFilters, value: SchoolFilters[keyof SchoolFilters]) =>
-    onChange({ ...filters, [key]: value });
+    onChange({ ...filters, [key]: value })
 
   return (
     <div className="bg-white rounded-xl border border-gray-100 p-5 space-y-5">
@@ -78,11 +97,15 @@ const FilterSidebar = ({ filters, onChange, onReset, onClose }: FilterSidebarPro
         <label className="block text-sm font-medium text-gray-700 mb-1.5">County</label>
         <select
           value={filters.county || ''}
-          onChange={e => update('county', e.target.value)}
+          onChange={(e) => update('county', e.target.value)}
           className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600 bg-white"
         >
           <option value="">All Counties</option>
-          {KENYAN_COUNTIES.map(c => <option key={c} value={c}>{c}</option>)}
+          {KENYAN_COUNTIES.map((c) => (
+            <option key={c} value={c}>
+              {c}
+            </option>
+          ))}
         </select>
       </div>
 
@@ -90,7 +113,7 @@ const FilterSidebar = ({ filters, onChange, onReset, onClose }: FilterSidebarPro
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1.5">School Type</label>
         <div className="space-y-1.5">
-          {SCHOOL_TYPES.map(type => (
+          {SCHOOL_TYPES.map((type) => (
             <label key={type} className="flex items-center gap-2 cursor-pointer">
               <input
                 type="radio"
@@ -121,7 +144,7 @@ const FilterSidebar = ({ filters, onChange, onReset, onClose }: FilterSidebarPro
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1.5">Curriculum</label>
         <div className="flex flex-wrap gap-2">
-          {CURRICULA.map(c => (
+          {CURRICULA.map((c) => (
             <button
               key={c}
               onClick={() => update('curriculum', filters.curriculum === c ? '' : c)}
@@ -141,7 +164,7 @@ const FilterSidebar = ({ filters, onChange, onReset, onClose }: FilterSidebarPro
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1.5">Gender</label>
         <div className="flex flex-wrap gap-2">
-          {GENDER_OPTIONS.map(g => (
+          {GENDER_OPTIONS.map((g) => (
             <button
               key={g}
               onClick={() => update('gender', filters.gender === g ? '' : g)}
@@ -161,7 +184,7 @@ const FilterSidebar = ({ filters, onChange, onReset, onClose }: FilterSidebarPro
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1.5">Boarding</label>
         <div className="flex flex-wrap gap-2">
-          {BOARDING_OPTIONS.map(b => (
+          {BOARDING_OPTIONS.map((b) => (
             <button
               key={b}
               onClick={() => update('boardingOptions', filters.boardingOptions === b ? '' : b)}
@@ -182,12 +205,14 @@ const FilterSidebar = ({ filters, onChange, onReset, onClose }: FilterSidebarPro
         <label className="block text-sm font-medium text-gray-700 mb-1.5">Religion</label>
         <select
           value={filters.religion || ''}
-          onChange={e => update('religion', e.target.value)}
+          onChange={(e) => update('religion', e.target.value)}
           className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600 bg-white"
         >
           <option value="">Any</option>
-          {RELIGION_OPTIONS.map(r => (
-            <option key={r} value={r} className="capitalize">{r}</option>
+          {RELIGION_OPTIONS.map((r) => (
+            <option key={r} value={r} className="capitalize">
+              {r}
+            </option>
           ))}
         </select>
       </div>
@@ -204,7 +229,7 @@ const FilterSidebar = ({ filters, onChange, onReset, onClose }: FilterSidebarPro
           max={200000}
           step={5000}
           value={filters.maxFee ?? 200000}
-          onChange={e => update('maxFee', Number(e.target.value))}
+          onChange={(e) => update('maxFee', Number(e.target.value))}
           className="w-full accent-green-600"
         />
         <div className="flex justify-between text-xs text-gray-400 mt-1">
@@ -218,14 +243,14 @@ const FilterSidebar = ({ filters, onChange, onReset, onClose }: FilterSidebarPro
         <input
           type="checkbox"
           checked={filters.specialNeedsSupport || false}
-          onChange={e => update('specialNeedsSupport', e.target.checked)}
+          onChange={(e) => update('specialNeedsSupport', e.target.checked)}
           className="accent-green-600 w-4 h-4"
         />
         <span className="text-sm text-gray-700">Special needs support</span>
       </label>
     </div>
-  );
-};
+  )
+}
 
 // ── Empty State ───────────────────────────────────────────────────────────────
 const EmptyState = ({ onReset }: { onReset: () => void }) => (
@@ -244,7 +269,7 @@ const EmptyState = ({ onReset }: { onReset: () => void }) => (
       Clear Filters
     </button>
   </div>
-);
+)
 
 // ── Compare Tray ──────────────────────────────────────────────────────────────
 const CompareTray = ({
@@ -252,11 +277,11 @@ const CompareTray = ({
   onRemove,
   onCompare,
 }: {
-  schools: School[];
-  onRemove: (id: string) => void;
-  onCompare: () => void;
+  schools: School[]
+  onRemove: (id: string) => void
+  onCompare: () => void
 }) => {
-  if (schools.length === 0) return null;
+  if (schools.length === 0) return null
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50 px-4 py-3">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
@@ -265,10 +290,16 @@ const CompareTray = ({
             Comparing ({schools.length}/4):
           </span>
           <div className="flex gap-2">
-            {schools.map(s => (
-              <div key={s.id} className="flex items-center gap-1.5 bg-green-50 border border-green-200 rounded-lg px-3 py-1.5 whitespace-nowrap">
+            {schools.map((s) => (
+              <div
+                key={s.id}
+                className="flex items-center gap-1.5 bg-green-50 border border-green-200 rounded-lg px-3 py-1.5 whitespace-nowrap"
+              >
                 <span className="text-sm text-green-800 font-medium">{s.name}</span>
-                <button onClick={() => onRemove(s.id)} className="text-green-600 hover:text-green-800">
+                <button
+                  onClick={() => onRemove(s.id)}
+                  className="text-green-600 hover:text-green-800"
+                >
                   <X className="w-3.5 h-3.5" />
                 </button>
               </div>
@@ -284,64 +315,73 @@ const CompareTray = ({
         </button>
       </div>
     </div>
-  );
-};
+  )
+}
 
 // ── Main Page ─────────────────────────────────────────────────────────────────
 export default function SchoolsPage() {
-  const [filters, setFilters] = useState<Partial<SchoolFilters>>(DEFAULT_FILTERS);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [showFilters, setShowFilters] = useState(false);
-  const [sortBy, setSortBy] = useState('rating');
-  const [compareList, setCompareList] = useState<School[]>([]);
-  const [shortlisted, setShortlisted] = useState<string[]>([]);
+  const navigate = useNavigate()
+  const [filters, setFilters] = useState<Partial<SchoolFilters>>(DEFAULT_FILTERS)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
+  const [showFilters, setShowFilters] = useState(false)
+  const [sortBy, setSortBy] = useState('rating')
+  const [compareList, setCompareList] = useState<School[]>([])
+  const { isAuthenticated } = useAuth()
+  const { isShortlisted, add: addShortlist, remove: removeShortlist } = useShortlist()
 
-  const { schools, loading, error, hasMore, loadMore } = useSchools(filters);
+  const { schools, loading, error, hasMore, loadMore } = useSchools(filters)
 
-  const filtered = schools.filter(s =>
-    s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    s.town.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filtered = schools.filter(
+    (s) =>
+      s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      s.town.toLowerCase().includes(searchQuery.toLowerCase())
+  )
 
   const sorted = [...filtered].sort((a, b) => {
-    if (sortBy === 'rating') return b.ratingAverage - a.ratingAverage;
-    if (sortBy === 'fee_asc') return a.fees.minTermFee - b.fees.minTermFee;
-    if (sortBy === 'fee_desc') return b.fees.minTermFee - a.fees.minTermFee;
-    if (sortBy === 'name') return a.name.localeCompare(b.name);
-    return 0;
-  });
+    if (sortBy === 'rating') return b.ratingAverage - a.ratingAverage
+    if (sortBy === 'fee_asc') return a.fees.minTermFee - b.fees.minTermFee
+    if (sortBy === 'fee_desc') return b.fees.minTermFee - a.fees.minTermFee
+    if (sortBy === 'name') return a.name.localeCompare(b.name)
+    return 0
+  })
 
   const handleShortlist = (school: School) => {
-    setShortlisted(prev =>
-      prev.includes(school.id) ? prev.filter(id => id !== school.id) : [...prev, school.id]
-    );
-  };
+    if (!isAuthenticated) {
+      navigate('/auth/login', { state: { from: { pathname: '/schools' } } })
+      return
+    }
+    if (isShortlisted(school.id)) {
+      removeShortlist(school.id)
+    } else {
+      addShortlist(toShortlistedSchool(school))
+    }
+  }
 
   const handleCompare = (school: School) => {
-    setCompareList(prev => {
-      if (prev.find(s => s.id === school.id)) return prev.filter(s => s.id !== school.id);
-      if (prev.length >= 4) return prev;
-      return [...prev, school];
-    });
-  };
+    setCompareList((prev) => {
+      if (prev.find((s) => s.id === school.id)) return prev.filter((s) => s.id !== school.id)
+      if (prev.length >= 4) return prev
+      return [...prev, school]
+    })
+  }
 
   const handleCompareNow = () => {
-    const ids = compareList.map(s => s.id).join(',');
-    window.location.href = `/parent/compare?schools=${ids}`;
-  };
+    const ids = compareList.map((s) => s.id).join(',')
+    navigate(`/schools/compare?schools=${ids}`)
+  }
 
   const resetFilters = () => {
-    setFilters(DEFAULT_FILTERS);
-    setSearchQuery('');
-  };
+    setFilters(DEFAULT_FILTERS)
+    setSearchQuery('')
+  }
 
   const activeFilterCount = Object.entries(filters).filter(([k, v]) => {
-    if (k === 'minFee' && v === 0) return false;
-    if (k === 'maxFee' && v === 200000) return false;
-    if (k === 'specialNeedsSupport' && v === false) return false;
-    return v !== '' && v !== undefined;
-  }).length;
+    if (k === 'minFee' && v === 0) return false
+    if (k === 'maxFee' && v === 200000) return false
+    if (k === 'specialNeedsSupport' && v === false) return false
+    return v !== '' && v !== undefined
+  }).length
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -359,7 +399,7 @@ export default function SchoolsPage() {
                 type="text"
                 placeholder="Search by school name or town..."
                 value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-600"
               />
               {searchQuery && (
@@ -376,7 +416,7 @@ export default function SchoolsPage() {
             <div className="relative">
               <select
                 value={sortBy}
-                onChange={e => setSortBy(e.target.value)}
+                onChange={(e) => setSortBy(e.target.value)}
                 className="appearance-none border border-gray-200 rounded-lg px-4 py-2.5 pr-8 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-green-600"
               >
                 <option value="rating">Top Rated</option>
@@ -425,7 +465,6 @@ export default function SchoolsPage() {
       {/* ── Body ── */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="flex gap-6">
-
           {/* Desktop sidebar */}
           <aside className="hidden lg:block w-64 shrink-0">
             <FilterSidebar filters={filters} onChange={setFilters} onReset={resetFilters} />
@@ -461,8 +500,12 @@ export default function SchoolsPage() {
             )}
 
             {loading && (
-              <div className={`grid gap-4 ${viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3' : 'grid-cols-1'}`}>
-                {Array.from({ length: 6 }).map((_, i) => <SchoolCardSkeleton key={i} />)}
+              <div
+                className={`grid gap-4 ${viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3' : 'grid-cols-1'}`}
+              >
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <SchoolCardSkeleton key={i} />
+                ))}
               </div>
             )}
 
@@ -470,15 +513,17 @@ export default function SchoolsPage() {
 
             {!loading && sorted.length > 0 && (
               <>
-                <div className={`grid gap-4 ${viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3' : 'grid-cols-1'}`}>
-                  {sorted.map(school => (
+                <div
+                  className={`grid gap-4 ${viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3' : 'grid-cols-1'}`}
+                >
+                  {sorted.map((school) => (
                     <SchoolCard
                       key={school.id}
                       school={school}
                       variant={viewMode}
-                      isShortlisted={shortlisted.includes(school.id)}
+                      isShortlisted={isShortlisted(school.id)}
                       onShortlist={handleShortlist}
-                      isCompared={!!compareList.find(s => s.id === school.id)}
+                      isCompared={!!compareList.find((s) => s.id === school.id)}
                       onCompare={handleCompare}
                     />
                   ))}
@@ -501,10 +546,10 @@ export default function SchoolsPage() {
 
       <CompareTray
         schools={compareList}
-        onRemove={id => setCompareList(prev => prev.filter(s => s.id !== id))}
+        onRemove={(id) => setCompareList((prev) => prev.filter((s) => s.id !== id))}
         onCompare={handleCompareNow}
       />
       {compareList.length > 0 && <div className="h-20" />}
     </div>
-  );
+  )
 }

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useState } from 'react'
+import { useParams, useNavigate, Link } from 'react-router-dom'
 import {
   MapPin,
   Phone,
@@ -19,18 +19,20 @@ import {
   Wifi,
   Shield,
   ArrowLeft,
-} from 'lucide-react';
+} from 'lucide-react'
 import {
   useSchool,
   useReviews,
   useAnnouncements,
   useAcademics,
   useNearbySchools,
-} from '../hooks/useSchools';
-import type { Review } from '../types/schools.types';
+} from '../hooks/useSchools'
+import { useAuth } from '../../auth/hooks/useAuth'
+import { useShortlist, toShortlistedSchool } from '../../utilities/hooks/useUtilities'
+import type { Review } from '../types/schools.types'
 
-const TABS = ['Overview', 'Academics', 'Facilities', 'Fees', 'Reviews', 'Gallery'] as const;
-type Tab = (typeof TABS)[number];
+const TABS = ['Overview', 'Academics', 'Facilities', 'Fees', 'Reviews', 'Gallery'] as const
+type Tab = (typeof TABS)[number]
 
 const HeaderSkeleton = () => (
   <div className="animate-pulse">
@@ -40,16 +42,10 @@ const HeaderSkeleton = () => (
       <div className="h-4 bg-gray-200 rounded w-1/3" />
     </div>
   </div>
-);
+)
 
-const Stars = ({
-  value,
-  size = 'sm',
-}: {
-  value: number;
-  size?: 'sm' | 'md' | 'lg';
-}) => {
-  const sizes = { sm: 'w-4 h-4', md: 'w-5 h-5', lg: 'w-6 h-6' };
+const Stars = ({ value, size = 'sm' }: { value: number; size?: 'sm' | 'md' | 'lg' }) => {
+  const sizes = { sm: 'w-4 h-4', md: 'w-5 h-5', lg: 'w-6 h-6' }
   return (
     <div className="flex items-center gap-0.5">
       {[1, 2, 3, 4, 5].map((i) => (
@@ -61,8 +57,8 @@ const Stars = ({
         />
       ))}
     </div>
-  );
-};
+  )
+}
 
 const FACILITY_ICONS: Record<string, React.ElementType> = {
   'Science Laboratory': BookOpen,
@@ -73,12 +69,11 @@ const FACILITY_ICONS: Record<string, React.ElementType> = {
   'School Bus': Bus,
   Dormitory: Building2,
   default: CheckCircle,
-};
+}
 
 const ReviewCard = ({ review }: { review: Review }) => {
   const avgRating =
-    Object.values(review.ratings).reduce((a, b) => a + b, 0) /
-    Object.values(review.ratings).length;
+    Object.values(review.ratings).reduce((a, b) => a + b, 0) / Object.values(review.ratings).length
 
   return (
     <div className="bg-white rounded-xl border border-gray-100 p-5 space-y-3">
@@ -89,21 +84,15 @@ const ReviewCard = ({ review }: { review: Review }) => {
           </div>
           <div>
             <div className="flex items-center gap-1.5">
-              <p className="text-sm font-semibold text-gray-900">
-                {review.parentName}
-              </p>
-              {review.isVerified && (
-                <CheckCircle className="w-3.5 h-3.5 text-green-600" />
-              )}
+              <p className="text-sm font-semibold text-gray-900">{review.parentName}</p>
+              {review.isVerified && <CheckCircle className="w-3.5 h-3.5 text-green-600" />}
             </div>
             <p className="text-xs text-gray-400">
-              {review.createdAt
-                ?.toDate?.()
-                .toLocaleDateString('en-KE', {
-                  day: '2-digit',
-                  month: 'short',
-                  year: 'numeric',
-                })}
+              {review.createdAt?.toDate?.().toLocaleDateString('en-KE', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+              })}
             </p>
           </div>
         </div>
@@ -122,26 +111,30 @@ const ReviewCard = ({ review }: { review: Review }) => {
       <p className="text-sm text-gray-700 leading-relaxed">{review.comment}</p>
       {review.schoolReply && (
         <div className="bg-green-50 border border-green-100 rounded-lg p-3">
-          <p className="text-xs font-semibold text-green-800 mb-1">
-            School Response
-          </p>
+          <p className="text-xs font-semibold text-green-800 mb-1">School Response</p>
           <p className="text-sm text-green-700">{review.schoolReply}</p>
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
 const ReviewModal = ({
   onClose,
   onSubmit,
   submitting,
+  reviewerId,
+  reviewerName,
 }: {
-  onClose: () => void;
-  onSubmit: (data: Omit<Review, 'id' | 'createdAt'>) => void;
-  submitting: boolean;
+  onClose: () => void
+  onSubmit: (
+    data: Omit<Review, 'id' | 'createdAt' | 'schoolId' | 'schoolName' | 'schoolLogo'>
+  ) => void
+  submitting: boolean
+  reviewerId: string
+  reviewerName: string
 }) => {
-  const [comment, setComment] = useState('');
+  const [comment, setComment] = useState('')
   const [ratings, setRatings] = useState({
     academics: 3,
     safety: 3,
@@ -149,32 +142,27 @@ const ReviewModal = ({
     teachers: 3,
     valueMoney: 3,
     communication: 3,
-  });
+  })
 
   const handleSubmit = () => {
-    if (!comment.trim()) return;
+    if (!comment.trim()) return
     onSubmit({
-      parentId: 'current-user-id',
-      parentName: 'Anonymous Parent',
+      parentId: reviewerId,
+      parentName: reviewerName,
       parentAvatar: '',
       ratings,
       comment,
       isVerified: false,
       schoolReply: '',
-    });
-  };
+    })
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
       <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl">
         <div className="flex items-center justify-between p-5 border-b border-gray-100">
-          <h3 className="font-heading font-semibold text-gray-900">
-            Write a Review
-          </h3>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
-          >
+          <h3 className="font-heading font-semibold text-gray-900">Write a Review</h3>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -189,9 +177,7 @@ const ReviewModal = ({
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
                       key={star}
-                      onClick={() =>
-                        setRatings((prev) => ({ ...prev, [key]: star }))
-                      }
+                      onClick={() => setRatings((prev) => ({ ...prev, [key]: star }))}
                       aria-label={`Rate ${key} ${star} stars`}
                     >
                       <Star
@@ -208,9 +194,7 @@ const ReviewModal = ({
             ))}
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">
-              Your Review
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Your Review</label>
             <textarea
               rows={4}
               value={comment}
@@ -237,27 +221,25 @@ const ReviewModal = ({
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 export default function SchoolDetailsPage() {
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<Tab>('Overview');
-  const [isShortlisted, setIsShortlisted] = useState(false);
-  const [showReviewModal, setShowReviewModal] = useState(false);
-  const [lightboxImg, setLightboxImg] = useState<string | null>(null);
+  const { schoolId } = useParams<{ schoolId: string }>()
+  const navigate = useNavigate()
+  const { isAuthenticated, user, profile } = useAuth()
+  const { isShortlisted, add: addShortlist, remove: removeShortlist } = useShortlist()
+  const [activeTab, setActiveTab] = useState<Tab>('Overview')
+  const [showReviewModal, setShowReviewModal] = useState(false)
+  const [lightboxImg, setLightboxImg] = useState<string | null>(null)
 
-  const { school, loading, error } = useSchool(id!);
-  const { reviews, submitting, addReview } = useReviews(id!);
-  const { announcements } = useAnnouncements(id!);
-  const { academics } = useAcademics(id!);
-  const { schools: nearbySchools } = useNearbySchools(
-    school?.county ?? '',
-    id!
-  );
+  const { school, loading, error } = useSchool(schoolId!)
+  const { reviews, submitting, addReview } = useReviews(schoolId!)
+  const { announcements } = useAnnouncements(schoolId!)
+  const { academics } = useAcademics(schoolId!)
+  const { schools: nearbySchools } = useNearbySchools(school?.county ?? '', schoolId!)
 
-  if (loading) return <HeaderSkeleton />;
+  if (loading) return <HeaderSkeleton />
 
   if (error || !school) {
     return (
@@ -272,27 +254,29 @@ export default function SchoolDetailsPage() {
           </button>
         </div>
       </div>
-    );
+    )
   }
 
-  const s = school;
+  const s = school
 
   const handleReviewSubmit = async (
-    data: Omit<Review, 'id' | 'createdAt'>
+    data: Omit<Review, 'id' | 'createdAt' | 'schoolId' | 'schoolName' | 'schoolLogo'>
   ) => {
-    await addReview(data);
-    setShowReviewModal(false);
-  };
+    await addReview({ ...data, schoolId: s.id, schoolName: s.name, schoolLogo: s.logoImage })
+    setShowReviewModal(false)
+  }
 
-  const telHref = `tel:${s.phone}`;
-  const mailHref = `mailto:${s.email}`;
-  const waHref = `https://wa.me/${s.whatsapp.replace(/\D/g, '')}`;
-  const enquiryHref = `/parent/messages?schoolId=${s.id}`;
-  const applyHref = `/parent/applications?schoolId=${s.id}`;
+  const telHref = `tel:${s.phone}`
+  const mailHref = `mailto:${s.email}`
+  const waHref = `https://wa.me/${s.whatsapp.replace(/\D/g, '')}`
+  const mapsHref = `https://www.google.com/maps?q=${s.latitude},${s.longitude}`
+  const enquiryHref = `/communication/messages?schoolId=${s.id}`
+  const visitHref = `/communication/visits?schoolId=${s.id}`
+  const questionHref = `/social/qa?schoolId=${s.id}`
+  const applyHref = `/applications/admission-forms?schoolId=${s.id}`
 
   return (
     <div className="min-h-screen bg-gray-50">
-
       {/* Cover */}
       <div className="relative h-64 md:h-80 bg-gray-200 overflow-hidden">
         <img
@@ -319,7 +303,6 @@ export default function SchoolDetailsPage() {
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row md:items-start gap-4">
-
             {/* Logo */}
             <div className="w-20 h-20 rounded-xl border-2 border-white shadow-md overflow-hidden bg-gray-100 shrink-0 -mt-12 md:-mt-16 relative z-10">
               {s.logoImage ? (
@@ -340,9 +323,7 @@ export default function SchoolDetailsPage() {
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
-                    <h1 className="font-heading font-bold text-2xl text-gray-900">
-                      {s.name}
-                    </h1>
+                    <h1 className="font-heading font-bold text-2xl text-gray-900">{s.name}</h1>
                     {s.isVerified && (
                       <span className="flex items-center gap-1 bg-green-50 text-green-700 text-xs font-semibold px-2.5 py-1 rounded-full border border-green-200">
                         <CheckCircle className="w-3.5 h-3.5" />
@@ -360,21 +341,26 @@ export default function SchoolDetailsPage() {
 
                 <div className="flex items-center gap-2 shrink-0">
                   <button
-                    onClick={() => setIsShortlisted(!isShortlisted)}
+                    onClick={() => {
+                      if (!isAuthenticated) {
+                        navigate('/auth/login', {
+                          state: { from: { pathname: `/schools/${s.id}` } },
+                        })
+                        return
+                      }
+                      if (isShortlisted(s.id)) removeShortlist(s.id)
+                      else addShortlist(toShortlistedSchool(s))
+                    }}
                     className={`p-2.5 rounded-lg border transition-colors ${
-                      isShortlisted
+                      isShortlisted(s.id)
                         ? 'bg-red-50 border-red-200 text-red-500'
                         : 'border-gray-200 text-gray-400 hover:text-red-500 hover:border-red-200'
                     }`}
                     aria-label="Shortlist"
                   >
-                    <Heart
-                      className={`w-5 h-5 ${
-                        isShortlisted ? 'fill-red-500' : ''
-                      }`}
-                    />
+                    <Heart className={`w-5 h-5 ${isShortlisted(s.id) ? 'fill-red-500' : ''}`} />
                   </button>
-                  
+
                   <Link
                     to={applyHref}
                     className="bg-green-700 hover:bg-green-800 text-white font-medium px-5 py-2.5 rounded-lg text-sm transition-colors"
@@ -388,12 +374,8 @@ export default function SchoolDetailsPage() {
               <div className="flex flex-wrap items-center gap-4 mt-3">
                 <div className="flex items-center gap-1.5">
                   <Stars value={Math.round(s.ratingAverage)} />
-                  <span className="font-semibold text-gray-800">
-                    {s.ratingAverage.toFixed(1)}
-                  </span>
-                  <span className="text-gray-400 text-sm">
-                    ({s.reviewCount} reviews)
-                  </span>
+                  <span className="font-semibold text-gray-800">{s.ratingAverage.toFixed(1)}</span>
+                  <span className="text-gray-400 text-sm">({s.reviewCount} reviews)</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {s.curriculum.map((c) => (
@@ -440,16 +422,12 @@ export default function SchoolDetailsPage() {
       {/* Tab Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex gap-8">
-
           {/* Main */}
           <div className="flex-1 min-w-0 space-y-6">
-
             {activeTab === 'Overview' && (
               <>
                 <div className="bg-white rounded-xl border border-gray-100 p-6">
-                  <h2 className="font-heading font-semibold text-gray-900 mb-3">
-                    About {s.name}
-                  </h2>
+                  <h2 className="font-heading font-semibold text-gray-900 mb-3">About {s.name}</h2>
                   <p className="text-gray-600 leading-relaxed">
                     {s.description || 'No description available.'}
                   </p>
@@ -459,7 +437,11 @@ export default function SchoolDetailsPage() {
                   {[
                     { icon: Calendar, label: 'Founded', value: s.foundedYear || '—' },
                     { icon: Users, label: 'Head Teacher', value: s.headTeacher || '—' },
-                    { icon: Users, label: 'Students', value: s.totalStudents?.toLocaleString() || '—' },
+                    {
+                      icon: Users,
+                      label: 'Students',
+                      value: s.totalStudents?.toLocaleString() || '—',
+                    },
                     { icon: Users, label: 'Teacher Ratio', value: s.teacherStudentRatio || '—' },
                   ].map(({ icon: Icon, label, value }) => (
                     <div
@@ -468,9 +450,7 @@ export default function SchoolDetailsPage() {
                     >
                       <Icon className="w-6 h-6 text-green-600 mx-auto mb-2" />
                       <p className="text-xs text-gray-500">{label}</p>
-                      <p className="font-semibold text-gray-900 text-sm mt-0.5">
-                        {value}
-                      </p>
+                      <p className="font-semibold text-gray-900 text-sm mt-0.5">{value}</p>
                     </div>
                   ))}
                 </div>
@@ -490,9 +470,7 @@ export default function SchoolDetailsPage() {
                             {a.category}
                           </span>
                           <div>
-                            <p className="text-sm font-medium text-gray-900">
-                              {a.title}
-                            </p>
+                            <p className="text-sm font-medium text-gray-900">{a.title}</p>
                             <p className="text-xs text-gray-500 mt-0.5">
                               {a.content.slice(0, 100)}...
                             </p>
@@ -519,21 +497,17 @@ export default function SchoolDetailsPage() {
                             <th className="text-left py-2 text-gray-500 font-medium">Year</th>
                             <th className="text-left py-2 text-gray-500 font-medium">KCPE Mean</th>
                             <th className="text-left py-2 text-gray-500 font-medium">KCSE Mean</th>
-                            <th className="text-left py-2 text-gray-500 font-medium">Subject Strengths</th>
+                            <th className="text-left py-2 text-gray-500 font-medium">
+                              Subject Strengths
+                            </th>
                           </tr>
                         </thead>
                         <tbody>
                           {academics.map((a) => (
                             <tr key={a.year} className="border-b border-gray-50">
-                              <td className="py-3 font-semibold text-gray-900">
-                                {a.year}
-                              </td>
-                              <td className="py-3 text-gray-700">
-                                {a.kcpeMeanScore || '—'}
-                              </td>
-                              <td className="py-3 text-gray-700">
-                                {a.kcseMeanScore || '—'}
-                              </td>
+                              <td className="py-3 font-semibold text-gray-900">{a.year}</td>
+                              <td className="py-3 text-gray-700">{a.kcpeMeanScore || '—'}</td>
+                              <td className="py-3 text-gray-700">{a.kcseMeanScore || '—'}</td>
                               <td className="py-3">
                                 <div className="flex flex-wrap gap-1">
                                   {a.subjectStrengths.map((sub) => (
@@ -552,9 +526,7 @@ export default function SchoolDetailsPage() {
                       </table>
                     </div>
                   ) : (
-                    <p className="text-gray-400 text-sm">
-                      No academic records available yet.
-                    </p>
+                    <p className="text-gray-400 text-sm">No academic records available yet.</p>
                   )}
                 </div>
 
@@ -564,17 +536,13 @@ export default function SchoolDetailsPage() {
                   </h2>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-gray-50 rounded-lg p-4">
-                      <p className="text-xs text-gray-500 mb-1">
-                        Teacher:Student Ratio
-                      </p>
+                      <p className="text-xs text-gray-500 mb-1">Teacher:Student Ratio</p>
                       <p className="font-bold text-gray-900 text-lg">
                         {s.teacherStudentRatio || '—'}
                       </p>
                     </div>
                     <div className="bg-gray-50 rounded-lg p-4">
-                      <p className="text-xs text-gray-500 mb-1">
-                        Total Students
-                      </p>
+                      <p className="text-xs text-gray-500 mb-1">Total Students</p>
                       <p className="font-bold text-gray-900 text-lg">
                         {s.totalStudents?.toLocaleString() || '—'}
                       </p>
@@ -586,9 +554,7 @@ export default function SchoolDetailsPage() {
 
             {activeTab === 'Facilities' && (
               <div className="bg-white rounded-xl border border-gray-100 p-6">
-                <h2 className="font-heading font-semibold text-gray-900 mb-5">
-                  Facilities
-                </h2>
+                <h2 className="font-heading font-semibold text-gray-900 mb-5">Facilities</h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                   {[
                     'Science Laboratory',
@@ -608,9 +574,8 @@ export default function SchoolDetailsPage() {
                     'Drama Hall',
                     'Special Needs Support',
                   ].map((facility) => {
-                    const available = s.facilities.includes(facility);
-                    const Icon =
-                      FACILITY_ICONS[facility] || FACILITY_ICONS['default'];
+                    const available = s.facilities.includes(facility)
+                    const Icon = FACILITY_ICONS[facility] || FACILITY_ICONS['default']
                     return (
                       <div
                         key={facility}
@@ -626,9 +591,7 @@ export default function SchoolDetailsPage() {
                           }`}
                         />
                         <span
-                          className={`text-sm ${
-                            available ? 'text-gray-800' : 'text-gray-400'
-                          }`}
+                          className={`text-sm ${available ? 'text-gray-800' : 'text-gray-400'}`}
                         >
                           {facility}
                         </span>
@@ -638,7 +601,7 @@ export default function SchoolDetailsPage() {
                           <X className="w-4 h-4 text-gray-300 ml-auto shrink-0" />
                         )}
                       </div>
-                    );
+                    )
                   })}
                 </div>
               </div>
@@ -647,9 +610,7 @@ export default function SchoolDetailsPage() {
             {activeTab === 'Fees' && (
               <div className="space-y-5">
                 <div className="bg-white rounded-xl border border-gray-100 p-6">
-                  <h2 className="font-heading font-semibold text-gray-900 mb-5">
-                    Fee Structure
-                  </h2>
+                  <h2 className="font-heading font-semibold text-gray-900 mb-5">Fee Structure</h2>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                     {[
                       {
@@ -700,18 +661,14 @@ export default function SchoolDetailsPage() {
                     </h2>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="bg-gray-50 rounded-lg p-4">
-                        <p className="text-xs text-gray-500 mb-1">
-                          Monthly Cost
-                        </p>
+                        <p className="text-xs text-gray-500 mb-1">Monthly Cost</p>
                         <p className="font-bold text-gray-900">
                           KES {s.transport.monthlyCost.toLocaleString()}
                         </p>
                       </div>
                       <div className="bg-gray-50 rounded-lg p-4">
                         <p className="text-xs text-gray-500 mb-1">Routes</p>
-                        <p className="text-sm text-gray-700">
-                          {s.transport.routes}
-                        </p>
+                        <p className="text-sm text-gray-700">{s.transport.routes}</p>
                       </div>
                     </div>
                   </div>
@@ -724,15 +681,17 @@ export default function SchoolDetailsPage() {
                 <div className="bg-white rounded-xl border border-gray-100 p-6">
                   <div className="flex items-start justify-between mb-5">
                     <div>
-                      <h2 className="font-heading font-semibold text-gray-900">
-                        Reviews
-                      </h2>
-                      <p className="text-sm text-gray-500 mt-0.5">
-                        {s.reviewCount} reviews
-                      </p>
+                      <h2 className="font-heading font-semibold text-gray-900">Reviews</h2>
+                      <p className="text-sm text-gray-500 mt-0.5">{s.reviewCount} reviews</p>
                     </div>
                     <button
-                      onClick={() => setShowReviewModal(true)}
+                      onClick={() =>
+                        isAuthenticated
+                          ? setShowReviewModal(true)
+                          : navigate('/auth/login', {
+                              state: { from: { pathname: `/schools/${s.id}` } },
+                            })
+                      }
                       className="bg-green-700 hover:bg-green-800 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
                     >
                       Write a Review
@@ -768,9 +727,7 @@ export default function SchoolDetailsPage() {
 
             {activeTab === 'Gallery' && (
               <div className="bg-white rounded-xl border border-gray-100 p-6">
-                <h2 className="font-heading font-semibold text-gray-900 mb-5">
-                  Photo Gallery
-                </h2>
+                <h2 className="font-heading font-semibold text-gray-900 mb-5">Photo Gallery</h2>
                 {s.gallery.length === 0 ? (
                   <p className="text-gray-400 text-sm text-center py-10">
                     No photos available yet.
@@ -799,11 +756,8 @@ export default function SchoolDetailsPage() {
 
           {/* Sidebar */}
           <aside className="hidden lg:block w-72 shrink-0 space-y-5">
-
             <div className="bg-white rounded-xl border border-gray-100 p-5 space-y-3">
-              <h3 className="font-heading font-semibold text-gray-900">
-                Contact School
-              </h3>
+              <h3 className="font-heading font-semibold text-gray-900">Contact School</h3>
               {s.phone && (
                 <a
                   href={telHref}
@@ -833,6 +787,17 @@ export default function SchoolDetailsPage() {
                   Visit Website
                 </a>
               )}
+              {Number.isFinite(s.latitude) && Number.isFinite(s.longitude) && (
+                <a
+                  href={mapsHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 text-sm text-gray-700 hover:text-green-700 transition-colors"
+                >
+                  <MapPin className="w-4 h-4 text-green-600" />
+                  Open in Google Maps
+                </a>
+              )}
               {s.whatsapp && (
                 <a
                   href={waHref}
@@ -844,19 +809,29 @@ export default function SchoolDetailsPage() {
                   WhatsApp School
                 </a>
               )}
-              
+
               <Link
                 to={enquiryHref}
                 className="flex items-center justify-center gap-2 border border-green-700 text-green-700 hover:bg-green-50 text-sm font-medium w-full py-2.5 rounded-lg transition-colors"
               >
                 Send Enquiry
               </Link>
+              <Link
+                to={visitHref}
+                className="flex items-center justify-center gap-2 border border-gray-200 text-gray-700 hover:bg-gray-50 text-sm font-medium w-full py-2.5 rounded-lg transition-colors"
+              >
+                Request a Visit
+              </Link>
+              <Link
+                to={questionHref}
+                className="flex items-center justify-center gap-2 border border-gray-200 text-gray-700 hover:bg-gray-50 text-sm font-medium w-full py-2.5 rounded-lg transition-colors"
+              >
+                Ask a Question
+              </Link>
             </div>
 
             <div className="bg-white rounded-xl border border-gray-100 p-5 space-y-3">
-              <h3 className="font-heading font-semibold text-gray-900">
-                Quick Info
-              </h3>
+              <h3 className="font-heading font-semibold text-gray-900">Quick Info</h3>
               {[
                 { label: 'Founded', value: String(s.foundedYear || '—') },
                 { label: 'Religion', value: s.religion },
@@ -868,21 +843,17 @@ export default function SchoolDetailsPage() {
               ].map(({ label, value }) => (
                 <div key={label} className="flex justify-between text-sm">
                   <span className="text-gray-500">{label}</span>
-                  <span className="text-gray-900 font-medium capitalize">
-                    {value || '—'}
-                  </span>
+                  <span className="text-gray-900 font-medium capitalize">{value || '—'}</span>
                 </div>
               ))}
             </div>
 
             {nearbySchools.length > 0 && (
               <div className="bg-white rounded-xl border border-gray-100 p-5">
-                <h3 className="font-heading font-semibold text-gray-900 mb-4">
-                  Nearby Schools
-                </h3>
+                <h3 className="font-heading font-semibold text-gray-900 mb-4">Nearby Schools</h3>
                 <div className="space-y-3">
                   {nearbySchools.map((ns) => {
-                    const nsHref = `/schools/${ns.id}`;
+                    const nsHref = `/schools/${ns.id}`
                     return (
                       <Link
                         key={ns.id}
@@ -903,9 +874,7 @@ export default function SchoolDetailsPage() {
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900 truncate">
-                            {ns.name}
-                          </p>
+                          <p className="text-sm font-medium text-gray-900 truncate">{ns.name}</p>
                           <div className="flex items-center gap-1">
                             <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
                             <span className="text-xs text-gray-500">
@@ -915,7 +884,7 @@ export default function SchoolDetailsPage() {
                         </div>
                         <ChevronRight className="w-4 h-4 text-gray-300 shrink-0" />
                       </Link>
-                    );
+                    )
                   })}
                 </div>
               </div>
@@ -946,13 +915,15 @@ export default function SchoolDetailsPage() {
       )}
 
       {/* Review Modal */}
-      {showReviewModal && (
+      {showReviewModal && user && (
         <ReviewModal
           onClose={() => setShowReviewModal(false)}
           onSubmit={handleReviewSubmit}
           submitting={submitting}
+          reviewerId={user.uid}
+          reviewerName={profile?.displayName ?? user.email ?? 'Parent'}
         />
       )}
     </div>
-  );
+  )
 }

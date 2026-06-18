@@ -1,16 +1,7 @@
-import { useState } from 'react';
-import { useShortlist } from '../hooks/useUtilities';
-import {
-  Heart,
-  MapPin,
-  Star,
-  CheckCircle,
-  Trash2,
-  GitCompare,
-  Search,
-  X,
-} from 'lucide-react';
-import type { ShortlistedSchool } from '../types/utilities.types';
+import { useState } from 'react'
+import { useShortlist } from '../hooks/useUtilities'
+import { Heart, MapPin, Star, CheckCircle, Trash2, GitCompare, Search, X } from 'lucide-react'
+import type { ShortlistedSchool } from '../types/utilities.types'
 
 const SkeletonCard = () => (
   <div className="bg-white rounded-xl border border-gray-100 overflow-hidden animate-pulse">
@@ -25,38 +16,36 @@ const SkeletonCard = () => (
       <div className="h-8 bg-gray-200 rounded" />
     </div>
   </div>
-);
+)
 
 const EmptyState = () => (
   <div className="flex flex-col items-center justify-center py-24 text-center">
     <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-4">
       <Heart className="w-8 h-8 text-red-400" />
     </div>
-    <h3 className="font-heading font-semibold text-gray-900 text-lg mb-2">
-      No saved schools yet
-    </h3>
+    <h3 className="font-heading font-semibold text-gray-900 text-lg mb-2">No saved schools yet</h3>
     <p className="text-gray-500 text-sm max-w-sm mb-6">
-      Browse schools and tap the heart icon to save ones you like. They will
-      appear here.
+      Browse schools and tap the heart icon to save ones you like. They will appear here.
     </p>
-    `n      <a href="/schools"
+    <a
+      href="/schools"
       className="bg-green-700 hover:bg-green-800 text-white font-medium px-6 py-2.5 rounded-lg transition-colors text-sm"
     >
       Browse Schools
     </a>
   </div>
-);
+)
 
 const CompareTray = ({
   schools,
   onRemove,
   onCompare,
 }: {
-  schools: ShortlistedSchool[];
-  onRemove: (id: string) => void;
-  onCompare: () => void;
+  schools: ShortlistedSchool[]
+  onRemove: (id: string) => void
+  onCompare: () => void
 }) => {
-  if (schools.length === 0) return null;
+  if (schools.length === 0) return null
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50 px-4 py-3">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
@@ -70,9 +59,7 @@ const CompareTray = ({
                 key={s.schoolId}
                 className="flex items-center gap-1.5 bg-green-50 border border-green-200 rounded-lg px-3 py-1.5 whitespace-nowrap"
               >
-                <span className="text-sm text-green-800 font-medium">
-                  {s.schoolName}
-                </span>
+                <span className="text-sm text-green-800 font-medium">{s.schoolName}</span>
                 <button
                   onClick={() => onRemove(s.schoolId)}
                   className="text-green-600 hover:text-green-800"
@@ -92,40 +79,41 @@ const CompareTray = ({
         </button>
       </div>
     </div>
-  );
-};
+  )
+}
 
 export default function ShortlistsPage() {
-  const { shortlist, loading, error, remove, clear } = useShortlist();
-  const [compareList, setCompareList] = useState<ShortlistedSchool[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const { shortlist, loading, error, remove, clear } = useShortlist()
+  const [compareList, setCompareList] = useState<ShortlistedSchool[]>([])
+  const [searchQuery, setSearchQuery] = useState('')
+  const [showClearConfirm, setShowClearConfirm] = useState(false)
 
-  const filtered = shortlist.filter((s) =>
-    s.schoolName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    s.schoolCounty.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filtered = shortlist.filter(
+    (s) =>
+      s.schoolName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      s.schoolCounty.toLowerCase().includes(searchQuery.toLowerCase())
+  )
 
   const handleCompareToggle = (school: ShortlistedSchool) => {
     setCompareList((prev) => {
       if (prev.find((s) => s.schoolId === school.schoolId)) {
-        return prev.filter((s) => s.schoolId !== school.schoolId);
+        return prev.filter((s) => s.schoolId !== school.schoolId)
       }
-      if (prev.length >= 4) return prev;
-      return [...prev, school];
-    });
-  };
+      if (prev.length >= 4) return prev
+      return [...prev, school]
+    })
+  }
 
   const handleCompareNow = () => {
-    const ids = compareList.map((s) => s.schoolId).join(',');
-    window.location.href = `/parent/compare?schools=${ids}`;
-  };
+    const ids = compareList.map((s) => s.schoolId).join(',')
+    window.location.href = `/schools/compare?schools=${ids}`
+  }
 
   const handleClear = async () => {
-    await clear();
-    setShowClearConfirm(false);
-    setCompareList([]);
-  };
+    await clear()
+    setShowClearConfirm(false)
+    setCompareList([])
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -134,9 +122,7 @@ export default function ShortlistsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <div>
-              <h1 className="font-heading font-bold text-2xl text-gray-900">
-                My Shortlist
-              </h1>
+              <h1 className="font-heading font-bold text-2xl text-gray-900">My Shortlist</h1>
               <p className="text-sm text-gray-500 mt-0.5">
                 {shortlist.length} saved school{shortlist.length !== 1 ? 's' : ''}
               </p>
@@ -206,19 +192,15 @@ export default function ShortlistsPage() {
 
         {!loading && shortlist.length > 0 && filtered.length === 0 && (
           <div className="text-center py-16">
-            <p className="text-gray-500 text-sm">
-              No schools match your search.
-            </p>
+            <p className="text-gray-500 text-sm">No schools match your search.</p>
           </div>
         )}
 
         {!loading && filtered.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {filtered.map((school) => {
-              const isCompared = !!compareList.find(
-                (s) => s.schoolId === school.schoolId
-              );
-              const schoolHref = `/schools/${school.schoolId}`;
+              const isCompared = !!compareList.find((s) => s.schoolId === school.schoolId)
+              const schoolHref = `/schools/${school.schoolId}`
               return (
                 <div
                   key={school.schoolId}
@@ -293,7 +275,8 @@ export default function ShortlistsPage() {
                         />
                         Compare
                       </label>
-                      `n                        <a href={schoolHref}
+                      <a
+                        href={schoolHref}
                         className="bg-green-700 hover:bg-green-800 text-white text-xs font-medium px-3 py-1.5 rounded-lg transition-colors"
                       >
                         View Profile
@@ -301,7 +284,7 @@ export default function ShortlistsPage() {
                     </div>
                   </div>
                 </div>
-              );
+              )
             })}
           </div>
         )}
@@ -315,8 +298,7 @@ export default function ShortlistsPage() {
               Clear shortlist?
             </h3>
             <p className="text-gray-500 text-sm mb-6">
-              This will remove all {shortlist.length} saved schools. This
-              action cannot be undone.
+              This will remove all {shortlist.length} saved schools. This action cannot be undone.
             </p>
             <div className="flex gap-3">
               <button
@@ -338,12 +320,10 @@ export default function ShortlistsPage() {
 
       <CompareTray
         schools={compareList}
-        onRemove={(id) =>
-          setCompareList((prev) => prev.filter((s) => s.schoolId !== id))
-        }
+        onRemove={(id) => setCompareList((prev) => prev.filter((s) => s.schoolId !== id))}
         onCompare={handleCompareNow}
       />
       {compareList.length > 0 && <div className="h-20" />}
     </div>
-  );
+  )
 }

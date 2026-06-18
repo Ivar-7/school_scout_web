@@ -1,28 +1,21 @@
-import { Check, X } from 'lucide-react';
-import type { Plan, SubscriptionTier } from '../types/monetization.types';
+import { Check, X } from 'lucide-react'
+import type { Plan, SubscriptionTier } from '../types/monetization.types'
 
 interface BillingCardProps {
-  plan: Plan;
-  currentTier: SubscriptionTier;
-  onSelect: (plan: Plan) => void;
-  processing: boolean;
+  plan: Plan
+  currentTier: SubscriptionTier
+  onSelect: (plan: Plan) => void
+  processing: boolean
 }
 
-export const BillingCard = ({
-  plan,
-  currentTier,
-  onSelect,
-  processing,
-}: BillingCardProps) => {
-  const isCurrent = plan.tier === currentTier;
-  const isHighlighted = plan.highlighted;
+export const BillingCard = ({ plan, currentTier, onSelect, processing }: BillingCardProps) => {
+  const isCurrent = plan.tier === currentTier
+  const isHighlighted = plan.highlighted
 
   return (
     <div
       className={`relative rounded-2xl border p-6 flex flex-col transition-shadow ${
-        isHighlighted
-          ? 'border-green-500 shadow-lg shadow-green-100'
-          : 'border-gray-200 shadow-sm'
+        isHighlighted ? 'border-green-500 shadow-lg shadow-green-100' : 'border-gray-200 shadow-sm'
       }`}
     >
       {isHighlighted && (
@@ -34,9 +27,7 @@ export const BillingCard = ({
       )}
 
       <div className="mb-4">
-        <h3 className="font-heading font-bold text-gray-900 text-lg">
-          {plan.name}
-        </h3>
+        <h3 className="font-heading font-bold text-gray-900 text-lg">{plan.name}</h3>
         <p className="text-xs text-gray-500 mt-0.5">{plan.description}</p>
       </div>
 
@@ -65,11 +56,7 @@ export const BillingCard = ({
                 <X className="w-2.5 h-2.5 text-gray-400" />
               </div>
             )}
-            <span
-              className={`text-sm ${
-                feature.included ? 'text-gray-700' : 'text-gray-400'
-              }`}
-            >
+            <span className={`text-sm ${feature.included ? 'text-gray-700' : 'text-gray-400'}`}>
               {feature.text}
             </span>
           </div>
@@ -94,5 +81,5 @@ export const BillingCard = ({
         </button>
       )}
     </div>
-  );
-};
+  )
+}

@@ -1,50 +1,49 @@
-import { Timestamp } from 'firebase/firestore';
+import type { Timestamp } from 'firebase/firestore'
 
-export type SubscriptionTier = 'free' | 'premium' | 'featured';
-export type SubscriptionStatus = 'active' | 'cancelled' | 'expired';
-export type PaymentStatus = 'pending' | 'completed' | 'failed';
-export type UserRole = 'parent' | 'school';
+export type { UserRole } from '../../../shared/types/user.types'
+import type { UserRole } from '../../../shared/types/user.types'
+
+export type SubscriptionTier = 'free' | 'premium' | 'featured'
+export type SubscriptionStatus = 'active' | 'cancelled' | 'expired'
+export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'cancelled'
 
 export interface Subscription {
-  userId: string;
-  role: UserRole;
-  tier: SubscriptionTier;
-  status: SubscriptionStatus;
-  mpesaPhone: string;
-  amount: number;
-  startDate: Timestamp;
-  endDate: Timestamp;
-  autoRenew: boolean;
-  createdAt: Timestamp;
-  updatedAt: Timestamp;
+  userId: string
+  role: UserRole
+  tier: SubscriptionTier
+  status: SubscriptionStatus
+  startDate: Timestamp
+  endDate: Timestamp
+  updatedAt: Timestamp
 }
 
 export interface Payment {
-  id: string;
-  userId: string;
-  subscriptionId: string;
-  amount: number;
-  phone: string;
-  mpesaReceiptNumber: string;
-  status: PaymentStatus;
-  tier: SubscriptionTier;
-  description: string;
-  createdAt: Timestamp;
+  id: string
+  userId: string
+  amount: number
+  phone: string
+  description: string
+  status: PaymentStatus
+  checkoutRequestID: string | null
+  confirmedVia: 'callback' | 'polling' | null
+  confirmedAt: Timestamp | null
+  createdAt: Timestamp
+  metadata: Record<string, unknown>
 }
 
 export interface PlanFeature {
-  text: string;
-  included: boolean;
+  text: string
+  included: boolean
 }
 
 export interface Plan {
-  tier: SubscriptionTier;
-  name: string;
-  price: number;
-  period: string;
-  description: string;
-  features: PlanFeature[];
-  highlighted: boolean;
+  tier: SubscriptionTier
+  name: string
+  price: number
+  period: string
+  description: string
+  features: PlanFeature[]
+  highlighted: boolean
 }
 
 export const PARENT_PLANS: Plan[] = [
@@ -88,7 +87,7 @@ export const PARENT_PLANS: Plan[] = [
       { text: 'Priority support', included: true },
     ],
   },
-];
+]
 
 export const SCHOOL_PLANS: Plan[] = [
   {
@@ -148,4 +147,4 @@ export const SCHOOL_PLANS: Plan[] = [
       { text: 'Custom analytics reports', included: true },
     ],
   },
-];
+]
