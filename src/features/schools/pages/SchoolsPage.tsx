@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Search, SlidersHorizontal, Grid, List, X, ChevronDown } from 'lucide-react'
 import { useSchools } from '../hooks/useSchools'
 import { SchoolCard } from '../components/SchoolCard'
@@ -321,8 +321,9 @@ const CompareTray = ({
 // ── Main Page ─────────────────────────────────────────────────────────────────
 export default function SchoolsPage() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const [filters, setFilters] = useState<Partial<SchoolFilters>>(DEFAULT_FILTERS)
-  const [searchQuery, setSearchQuery] = useState('')
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('q') ?? '')
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [showFilters, setShowFilters] = useState(false)
   const [sortBy, setSortBy] = useState('rating')
