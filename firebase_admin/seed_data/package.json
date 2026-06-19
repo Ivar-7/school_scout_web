@@ -1,0 +1,11 @@
+{
+  "name": "seed_data",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "seed:schools": "node seedSchools.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^13.6.0"
+  }
+}

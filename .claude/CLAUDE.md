@@ -27,7 +27,7 @@
 - **Architecture**: Firebase config (rules, indexes) in src/config/firebsase.
 - **Rules**: Authorization-focused rules. Application code manages schema and business logic.
 - **Performance**: Indexes deliberately small to keep cost/latency low.
-- **Deploy**: Do not Deploy just document commands to deploy and say if any changes.
+- **Deploy**: Deploy indexes rules and functions if any changes.
 
 ---
 

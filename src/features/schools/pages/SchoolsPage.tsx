@@ -50,16 +50,16 @@ const DEFAULT_FILTERS: Partial<SchoolFilters> = {
 
 // ── Skeleton ──────────────────────────────────────────────────────────────────
 const SchoolCardSkeleton = () => (
-  <div className="bg-white rounded-xl border border-gray-100 overflow-hidden animate-pulse">
-    <div className="h-44 bg-gray-200" />
+  <div className="bg-surface rounded-xl border border-border overflow-hidden animate-pulse">
+    <div className="h-44 bg-background" />
     <div className="p-4 space-y-3">
-      <div className="h-4 bg-gray-200 rounded w-3/4" />
-      <div className="h-3 bg-gray-200 rounded w-1/2" />
+      <div className="h-4 bg-background rounded w-3/4" />
+      <div className="h-3 bg-background rounded w-1/2" />
       <div className="flex gap-2">
-        <div className="h-5 bg-gray-200 rounded-full w-12" />
-        <div className="h-5 bg-gray-200 rounded-full w-16" />
+        <div className="h-5 bg-background rounded-full w-12" />
+        <div className="h-5 bg-background rounded-full w-16" />
       </div>
-      <div className="h-8 bg-gray-200 rounded w-full mt-2" />
+      <div className="h-8 bg-background rounded w-full mt-2" />
     </div>
   </div>
 )
@@ -77,15 +77,15 @@ const FilterSidebar = ({ filters, onChange, onReset, onClose }: FilterSidebarPro
     onChange({ ...filters, [key]: value })
 
   return (
-    <div className="bg-white rounded-xl border border-gray-100 p-5 space-y-5">
+    <div className="bg-surface rounded-xl border border-border p-5 space-y-5">
       <div className="flex items-center justify-between">
-        <h3 className="font-heading font-semibold text-gray-900">Filters</h3>
+        <h3 className="font-heading font-semibold text-foreground">Filters</h3>
         <div className="flex items-center gap-2">
-          <button onClick={onReset} className="text-xs text-green-700 hover:underline font-medium">
+          <button onClick={onReset} className="text-xs text-brand hover:underline font-medium">
             Reset all
           </button>
           {onClose && (
-            <button onClick={onClose} className="text-gray-400 hover:text-gray-600 lg:hidden">
+            <button onClick={onClose} className="text-muted hover:text-foreground lg:hidden">
               <X className="w-4 h-4" />
             </button>
           )}
@@ -94,11 +94,11 @@ const FilterSidebar = ({ filters, onChange, onReset, onClose }: FilterSidebarPro
 
       {/* County */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1.5">County</label>
+        <label className="block text-sm font-medium text-foreground mb-1.5">County</label>
         <select
           value={filters.county || ''}
           onChange={(e) => update('county', e.target.value)}
-          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600 bg-white"
+          className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand bg-surface text-foreground"
         >
           <option value="">All Counties</option>
           {KENYAN_COUNTIES.map((c) => (
@@ -111,7 +111,7 @@ const FilterSidebar = ({ filters, onChange, onReset, onClose }: FilterSidebarPro
 
       {/* School Type */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1.5">School Type</label>
+        <label className="block text-sm font-medium text-foreground mb-1.5">School Type</label>
         <div className="space-y-1.5">
           {SCHOOL_TYPES.map((type) => (
             <label key={type} className="flex items-center gap-2 cursor-pointer">
@@ -121,9 +121,9 @@ const FilterSidebar = ({ filters, onChange, onReset, onClose }: FilterSidebarPro
                 value={type}
                 checked={filters.type === type}
                 onChange={() => update('type', type)}
-                className="accent-green-600"
+                className="accent-brand"
               />
-              <span className="text-sm text-gray-700 capitalize">{type}</span>
+              <span className="text-sm text-foreground capitalize">{type}</span>
             </label>
           ))}
           <label className="flex items-center gap-2 cursor-pointer">
@@ -133,16 +133,16 @@ const FilterSidebar = ({ filters, onChange, onReset, onClose }: FilterSidebarPro
               value=""
               checked={!filters.type}
               onChange={() => update('type', '')}
-              className="accent-green-600"
+              className="accent-brand"
             />
-            <span className="text-sm text-gray-700">All Types</span>
+            <span className="text-sm text-foreground">All Types</span>
           </label>
         </div>
       </div>
 
       {/* Curriculum */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1.5">Curriculum</label>
+        <label className="block text-sm font-medium text-foreground mb-1.5">Curriculum</label>
         <div className="flex flex-wrap gap-2">
           {CURRICULA.map((c) => (
             <button
@@ -150,8 +150,8 @@ const FilterSidebar = ({ filters, onChange, onReset, onClose }: FilterSidebarPro
               onClick={() => update('curriculum', filters.curriculum === c ? '' : c)}
               className={`text-xs px-3 py-1.5 rounded-full border font-medium transition-colors ${
                 filters.curriculum === c
-                  ? 'bg-green-700 text-white border-green-700'
-                  : 'bg-white text-gray-600 border-gray-200 hover:border-green-600 hover:text-green-700'
+                  ? 'bg-brand text-white border-brand'
+                  : 'bg-surface text-muted border-border hover:border-brand hover:text-brand'
               }`}
             >
               {c}
@@ -162,7 +162,7 @@ const FilterSidebar = ({ filters, onChange, onReset, onClose }: FilterSidebarPro
 
       {/* Gender */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1.5">Gender</label>
+        <label className="block text-sm font-medium text-foreground mb-1.5">Gender</label>
         <div className="flex flex-wrap gap-2">
           {GENDER_OPTIONS.map((g) => (
             <button
@@ -170,8 +170,8 @@ const FilterSidebar = ({ filters, onChange, onReset, onClose }: FilterSidebarPro
               onClick={() => update('gender', filters.gender === g ? '' : g)}
               className={`text-xs px-3 py-1.5 rounded-full border font-medium capitalize transition-colors ${
                 filters.gender === g
-                  ? 'bg-green-700 text-white border-green-700'
-                  : 'bg-white text-gray-600 border-gray-200 hover:border-green-600 hover:text-green-700'
+                  ? 'bg-brand text-white border-brand'
+                  : 'bg-surface text-muted border-border hover:border-brand hover:text-brand'
               }`}
             >
               {g}
@@ -182,7 +182,7 @@ const FilterSidebar = ({ filters, onChange, onReset, onClose }: FilterSidebarPro
 
       {/* Boarding */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1.5">Boarding</label>
+        <label className="block text-sm font-medium text-foreground mb-1.5">Boarding</label>
         <div className="flex flex-wrap gap-2">
           {BOARDING_OPTIONS.map((b) => (
             <button
@@ -190,8 +190,8 @@ const FilterSidebar = ({ filters, onChange, onReset, onClose }: FilterSidebarPro
               onClick={() => update('boardingOptions', filters.boardingOptions === b ? '' : b)}
               className={`text-xs px-3 py-1.5 rounded-full border font-medium capitalize transition-colors ${
                 filters.boardingOptions === b
-                  ? 'bg-green-700 text-white border-green-700'
-                  : 'bg-white text-gray-600 border-gray-200 hover:border-green-600 hover:text-green-700'
+                  ? 'bg-brand text-white border-brand'
+                  : 'bg-surface text-muted border-border hover:border-brand hover:text-brand'
               }`}
             >
               {b}
@@ -202,11 +202,11 @@ const FilterSidebar = ({ filters, onChange, onReset, onClose }: FilterSidebarPro
 
       {/* Religion */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1.5">Religion</label>
+        <label className="block text-sm font-medium text-foreground mb-1.5">Religion</label>
         <select
           value={filters.religion || ''}
           onChange={(e) => update('religion', e.target.value)}
-          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600 bg-white"
+          className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand bg-surface text-foreground"
         >
           <option value="">Any</option>
           {RELIGION_OPTIONS.map((r) => (
@@ -219,9 +219,9 @@ const FilterSidebar = ({ filters, onChange, onReset, onClose }: FilterSidebarPro
 
       {/* Fee Range */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1.5">
+        <label className="block text-sm font-medium text-foreground mb-1.5">
           Max Term Fee:{' '}
-          <span className="text-green-700">KES {(filters.maxFee ?? 200000).toLocaleString()}</span>
+          <span className="text-brand">KES {(filters.maxFee ?? 200000).toLocaleString()}</span>
         </label>
         <input
           type="range"
@@ -230,9 +230,9 @@ const FilterSidebar = ({ filters, onChange, onReset, onClose }: FilterSidebarPro
           step={5000}
           value={filters.maxFee ?? 200000}
           onChange={(e) => update('maxFee', Number(e.target.value))}
-          className="w-full accent-green-600"
+          className="w-full accent-brand"
         />
-        <div className="flex justify-between text-xs text-gray-400 mt-1">
+        <div className="flex justify-between text-xs text-muted mt-1">
           <span>KES 0</span>
           <span>KES 200,000</span>
         </div>
@@ -244,9 +244,9 @@ const FilterSidebar = ({ filters, onChange, onReset, onClose }: FilterSidebarPro
           type="checkbox"
           checked={filters.specialNeedsSupport || false}
           onChange={(e) => update('specialNeedsSupport', e.target.checked)}
-          className="accent-green-600 w-4 h-4"
+          className="accent-brand w-4 h-4"
         />
-        <span className="text-sm text-gray-700">Special needs support</span>
+        <span className="text-sm text-foreground">Special needs support</span>
       </label>
     </div>
   )
@@ -255,16 +255,16 @@ const FilterSidebar = ({ filters, onChange, onReset, onClose }: FilterSidebarPro
 // ── Empty State ───────────────────────────────────────────────────────────────
 const EmptyState = ({ onReset }: { onReset: () => void }) => (
   <div className="flex flex-col items-center justify-center py-20 text-center">
-    <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mb-4">
-      <Search className="w-8 h-8 text-green-600" />
+    <div className="w-16 h-16 bg-brand-soft rounded-full flex items-center justify-center mb-4">
+      <Search className="w-8 h-8 text-brand" />
     </div>
-    <h3 className="font-heading font-semibold text-gray-900 text-lg mb-2">No schools found</h3>
-    <p className="text-gray-500 text-sm max-w-sm mb-6">
+    <h3 className="font-heading font-semibold text-foreground text-lg mb-2">No schools found</h3>
+    <p className="text-muted text-sm max-w-sm mb-6">
       We couldn't find any schools matching your current filters. Try adjusting your search.
     </p>
     <button
       onClick={onReset}
-      className="bg-green-700 hover:bg-green-800 text-white font-medium px-6 py-2.5 rounded-lg transition-colors"
+      className="bg-brand hover:bg-brand-strong text-white font-medium px-6 py-2.5 rounded-lg transition-colors"
     >
       Clear Filters
     </button>
@@ -283,22 +283,22 @@ const CompareTray = ({
 }) => {
   if (schools.length === 0) return null
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50 px-4 py-3">
+    <div className="fixed bottom-0 left-0 right-0 bg-surface border-t border-border shadow-lg z-50 px-4 py-3">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
         <div className="flex items-center gap-3 flex-1 overflow-x-auto">
-          <span className="text-sm font-medium text-gray-700 whitespace-nowrap">
+          <span className="text-sm font-medium text-foreground whitespace-nowrap">
             Comparing ({schools.length}/4):
           </span>
           <div className="flex gap-2">
             {schools.map((s) => (
               <div
                 key={s.id}
-                className="flex items-center gap-1.5 bg-green-50 border border-green-200 rounded-lg px-3 py-1.5 whitespace-nowrap"
+                className="flex items-center gap-1.5 bg-brand-soft border border-brand/30 rounded-lg px-3 py-1.5 whitespace-nowrap"
               >
-                <span className="text-sm text-green-800 font-medium">{s.name}</span>
+                <span className="text-sm text-brand-strong font-medium">{s.name}</span>
                 <button
                   onClick={() => onRemove(s.id)}
-                  className="text-green-600 hover:text-green-800"
+                  className="text-brand hover:text-brand-strong"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -309,7 +309,7 @@ const CompareTray = ({
         <button
           onClick={onCompare}
           disabled={schools.length < 2}
-          className="bg-green-700 hover:bg-green-800 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium px-5 py-2 rounded-lg transition-colors whitespace-nowrap text-sm"
+          className="bg-brand hover:bg-brand-strong disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium px-5 py-2 rounded-lg transition-colors whitespace-nowrap text-sm"
         >
           Compare Now
         </button>
@@ -385,28 +385,28 @@ export default function SchoolsPage() {
   }).length
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* ── Header ── */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-surface border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <h1 className="font-heading font-bold text-2xl text-gray-900 mb-4">
+          <h1 className="font-heading font-bold text-2xl text-foreground mb-4">
             Find Schools in Kenya
           </h1>
           <div className="flex flex-col sm:flex-row gap-3">
             {/* Search */}
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
               <input
                 type="text"
                 placeholder="Search by school name or town..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-600"
+                className="w-full pl-10 pr-4 py-2.5 border border-border rounded-lg text-sm bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-brand"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-foreground"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -418,42 +418,42 @@ export default function SchoolsPage() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="appearance-none border border-gray-200 rounded-lg px-4 py-2.5 pr-8 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-green-600"
+                className="appearance-none border border-border rounded-lg px-4 py-2.5 pr-8 text-sm bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-brand"
               >
                 <option value="rating">Top Rated</option>
                 <option value="fee_asc">Fees: Low to High</option>
                 <option value="fee_desc">Fees: High to Low</option>
                 <option value="name">Name A–Z</option>
               </select>
-              <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+              <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted pointer-events-none" />
             </div>
 
             {/* Mobile filter toggle */}
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center gap-2 border border-gray-200 rounded-lg px-4 py-2.5 text-sm bg-white hover:border-green-600 hover:text-green-700 transition-colors lg:hidden"
+              className="flex items-center gap-2 border border-border rounded-lg px-4 py-2.5 text-sm bg-surface text-foreground hover:border-brand hover:text-brand transition-colors lg:hidden"
             >
               <SlidersHorizontal className="w-4 h-4" />
               Filters
               {activeFilterCount > 0 && (
-                <span className="bg-green-700 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                <span className="bg-brand text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
                   {activeFilterCount}
                 </span>
               )}
             </button>
 
             {/* View toggle */}
-            <div className="flex border border-gray-200 rounded-lg overflow-hidden">
+            <div className="flex border border-border rounded-lg overflow-hidden">
               <button
                 onClick={() => setViewMode('grid')}
-                className={`px-3 py-2.5 transition-colors ${viewMode === 'grid' ? 'bg-green-700 text-white' : 'bg-white text-gray-500 hover:text-gray-700'}`}
+                className={`px-3 py-2.5 transition-colors ${viewMode === 'grid' ? 'bg-brand text-white' : 'bg-surface text-muted hover:text-foreground'}`}
                 aria-label="Grid view"
               >
                 <Grid className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`px-3 py-2.5 transition-colors ${viewMode === 'list' ? 'bg-green-700 text-white' : 'bg-white text-gray-500 hover:text-gray-700'}`}
+                className={`px-3 py-2.5 transition-colors ${viewMode === 'list' ? 'bg-brand text-white' : 'bg-surface text-muted hover:text-foreground'}`}
                 aria-label="List view"
               >
                 <List className="w-4 h-4" />
@@ -475,7 +475,7 @@ export default function SchoolsPage() {
           {showFilters && (
             <div className="fixed inset-0 z-40 lg:hidden">
               <div className="absolute inset-0 bg-black/40" onClick={() => setShowFilters(false)} />
-              <div className="absolute right-0 top-0 bottom-0 w-80 bg-white overflow-y-auto p-4 shadow-xl">
+              <div className="absolute right-0 top-0 bottom-0 w-80 bg-surface overflow-y-auto p-4 shadow-xl">
                 <FilterSidebar
                   filters={filters}
                   onChange={setFilters}
@@ -489,13 +489,13 @@ export default function SchoolsPage() {
           {/* Results */}
           <main className="flex-1 min-w-0">
             {!loading && sorted.length > 0 && (
-              <p className="text-sm text-gray-500 mb-4">
+              <p className="text-sm text-muted mb-4">
                 Showing {sorted.length} school{sorted.length !== 1 ? 's' : ''}
               </p>
             )}
 
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 text-sm mb-4">
+              <div className="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 text-red-700 dark:text-red-400 rounded-lg px-4 py-3 text-sm mb-4">
                 {error}
               </div>
             )}
@@ -533,7 +533,7 @@ export default function SchoolsPage() {
                   <div className="flex justify-center mt-8">
                     <button
                       onClick={loadMore}
-                      className="border border-green-700 text-green-700 hover:bg-green-50 font-medium px-8 py-2.5 rounded-lg transition-colors"
+                      className="border border-brand text-brand hover:bg-brand-soft font-medium px-8 py-2.5 rounded-lg transition-colors"
                     >
                       Load More Schools
                     </button>
