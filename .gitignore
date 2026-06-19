@@ -24,4 +24,4 @@ dist-ssr
 *.sw?
 
 .env
-firebase_admin/react-abcederian-firebase-adminsdk-pe237-016500133e.json
+firebase_admin/react-abcederian-firebase-adminsdk.json

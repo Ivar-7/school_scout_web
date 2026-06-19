@@ -36,10 +36,10 @@ type Tab = (typeof TABS)[number]
 
 const HeaderSkeleton = () => (
   <div className="animate-pulse">
-    <div className="h-64 bg-gray-200 w-full" />
+    <div className="h-64 bg-border w-full" />
     <div className="max-w-7xl mx-auto px-4 py-6 space-y-4">
-      <div className="h-8 bg-gray-200 rounded w-1/2" />
-      <div className="h-4 bg-gray-200 rounded w-1/3" />
+      <div className="h-8 bg-border rounded w-1/2" />
+      <div className="h-4 bg-border rounded w-1/3" />
     </div>
   </div>
 )
@@ -52,7 +52,7 @@ const Stars = ({ value, size = 'sm' }: { value: number; size?: 'sm' | 'md' | 'lg
         <Star
           key={i}
           className={`${sizes[size]} ${
-            i <= value ? 'fill-amber-400 text-amber-400' : 'text-gray-200'
+            i <= value ? 'fill-amber-400 text-amber-400' : 'text-muted'
           }`}
         />
       ))}
@@ -76,18 +76,18 @@ const ReviewCard = ({ review }: { review: Review }) => {
     Object.values(review.ratings).reduce((a, b) => a + b, 0) / Object.values(review.ratings).length
 
   return (
-    <div className="bg-white rounded-xl border border-gray-100 p-5 space-y-3">
+    <div className="bg-surface rounded-xl border border-border p-5 space-y-3">
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-semibold text-sm">
+          <div className="w-9 h-9 rounded-full bg-brand-soft flex items-center justify-center text-brand font-semibold text-sm">
             {review.parentName.charAt(0).toUpperCase()}
           </div>
           <div>
             <div className="flex items-center gap-1.5">
-              <p className="text-sm font-semibold text-gray-900">{review.parentName}</p>
-              {review.isVerified && <CheckCircle className="w-3.5 h-3.5 text-green-600" />}
+              <p className="text-sm font-semibold text-foreground">{review.parentName}</p>
+              {review.isVerified && <CheckCircle className="w-3.5 h-3.5 text-brand" />}
             </div>
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-muted">
               {review.createdAt?.toDate?.().toLocaleDateString('en-KE', {
                 day: '2-digit',
                 month: 'short',
@@ -101,18 +101,18 @@ const ReviewCard = ({ review }: { review: Review }) => {
       <div className="grid grid-cols-2 gap-x-6 gap-y-1">
         {Object.entries(review.ratings).map(([key, val]) => (
           <div key={key} className="flex items-center justify-between">
-            <span className="text-xs text-gray-500 capitalize">
+            <span className="text-xs text-muted capitalize">
               {key.replace(/([A-Z])/g, ' $1')}
             </span>
             <Stars value={val} size="sm" />
           </div>
         ))}
       </div>
-      <p className="text-sm text-gray-700 leading-relaxed">{review.comment}</p>
+      <p className="text-sm text-foreground leading-relaxed">{review.comment}</p>
       {review.schoolReply && (
-        <div className="bg-green-50 border border-green-100 rounded-lg p-3">
-          <p className="text-xs font-semibold text-green-800 mb-1">School Response</p>
-          <p className="text-sm text-green-700">{review.schoolReply}</p>
+        <div className="bg-brand-soft border border-brand/20 rounded-lg p-3">
+          <p className="text-xs font-semibold text-brand-strong mb-1">School Response</p>
+          <p className="text-sm text-brand">{review.schoolReply}</p>
         </div>
       )}
     </div>
@@ -159,10 +159,10 @@ const ReviewModal = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-      <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl">
-        <div className="flex items-center justify-between p-5 border-b border-gray-100">
-          <h3 className="font-heading font-semibold text-gray-900">Write a Review</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+      <div className="bg-surface rounded-2xl w-full max-w-lg shadow-2xl">
+        <div className="flex items-center justify-between p-5 border-b border-border">
+          <h3 className="font-heading font-semibold text-foreground">Write a Review</h3>
+          <button onClick={onClose} className="text-muted hover:text-muted">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -170,7 +170,7 @@ const ReviewModal = ({
           <div className="space-y-3">
             {Object.entries(ratings).map(([key, val]) => (
               <div key={key} className="flex items-center justify-between">
-                <span className="text-sm text-gray-700 capitalize w-32">
+                <span className="text-sm text-foreground capitalize w-32">
                   {key.replace(/([A-Z])/g, ' $1')}
                 </span>
                 <div className="flex gap-1">
@@ -184,7 +184,7 @@ const ReviewModal = ({
                         className={`w-5 h-5 transition-colors ${
                           star <= val
                             ? 'fill-amber-400 text-amber-400'
-                            : 'text-gray-200 hover:text-amber-300'
+                            : 'text-muted hover:text-amber-300'
                         }`}
                       />
                     </button>
@@ -194,27 +194,27 @@ const ReviewModal = ({
             ))}
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Your Review</label>
+            <label className="block text-sm font-medium text-foreground mb-1.5">Your Review</label>
             <textarea
               rows={4}
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               placeholder="Share your experience at this school..."
-              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-green-600"
+              className="w-full border border-border rounded-lg px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-brand"
             />
           </div>
         </div>
-        <div className="p-5 border-t border-gray-100 flex gap-3 justify-end">
+        <div className="p-5 border-t border-border flex gap-3 justify-end">
           <button
             onClick={onClose}
-            className="px-5 py-2 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+            className="px-5 py-2 text-sm text-muted border border-border rounded-lg hover:bg-background transition-colors"
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
             disabled={submitting || !comment.trim()}
-            className="px-5 py-2 text-sm bg-green-700 hover:bg-green-800 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-5 py-2 text-sm bg-brand hover:bg-brand-strong text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {submitting ? 'Submitting...' : 'Submit Review'}
           </button>
@@ -245,10 +245,10 @@ export default function SchoolDetailsPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-500 mb-4">{error || 'School not found.'}</p>
+          <p className="text-muted mb-4">{error || 'School not found.'}</p>
           <button
             onClick={() => navigate('/schools')}
-            className="text-green-700 hover:underline font-medium"
+            className="text-brand hover:underline font-medium"
           >
             Back to Schools
           </button>
@@ -276,9 +276,9 @@ export default function SchoolDetailsPage() {
   const applyHref = `/applications/admission-forms?schoolId=${s.id}`
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Cover */}
-      <div className="relative h-64 md:h-80 bg-gray-200 overflow-hidden">
+      <div className="relative h-64 md:h-80 bg-border overflow-hidden">
         <img
           src={s.coverImage || '/placeholder-school.jpg'}
           alt={s.name}
@@ -300,11 +300,11 @@ export default function SchoolDetailsPage() {
       </div>
 
       {/* School Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-surface border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row md:items-start gap-4">
             {/* Logo */}
-            <div className="w-20 h-20 rounded-xl border-2 border-white shadow-md overflow-hidden bg-gray-100 shrink-0 -mt-12 md:-mt-16 relative z-10">
+            <div className="w-20 h-20 rounded-xl border-2 border-surface shadow-md overflow-hidden bg-background shrink-0 -mt-12 md:-mt-16 relative z-10">
               {s.logoImage ? (
                 <img
                   src={s.logoImage}
@@ -312,7 +312,7 @@ export default function SchoolDetailsPage() {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center bg-green-100 text-green-700 font-bold text-2xl">
+                <div className="w-full h-full flex items-center justify-center bg-brand-soft text-brand font-bold text-2xl">
                   {s.name.charAt(0)}
                 </div>
               )}
@@ -323,15 +323,15 @@ export default function SchoolDetailsPage() {
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
-                    <h1 className="font-heading font-bold text-2xl text-gray-900">{s.name}</h1>
+                    <h1 className="font-heading font-bold text-2xl text-foreground">{s.name}</h1>
                     {s.isVerified && (
-                      <span className="flex items-center gap-1 bg-green-50 text-green-700 text-xs font-semibold px-2.5 py-1 rounded-full border border-green-200">
+                      <span className="flex items-center gap-1 bg-brand-soft text-brand text-xs font-semibold px-2.5 py-1 rounded-full border border-brand/30">
                         <CheckCircle className="w-3.5 h-3.5" />
                         Verified
                       </span>
                     )}
                   </div>
-                  <div className="flex items-center gap-1.5 text-gray-500 mt-1">
+                  <div className="flex items-center gap-1.5 text-muted mt-1">
                     <MapPin className="w-4 h-4" />
                     <span className="text-sm">
                       {s.address}, {s.town}, {s.county}
@@ -354,7 +354,7 @@ export default function SchoolDetailsPage() {
                     className={`p-2.5 rounded-lg border transition-colors ${
                       isShortlisted(s.id)
                         ? 'bg-red-50 border-red-200 text-red-500'
-                        : 'border-gray-200 text-gray-400 hover:text-red-500 hover:border-red-200'
+                        : 'border-border text-muted hover:text-red-500 hover:border-red-200'
                     }`}
                     aria-label="Shortlist"
                   >
@@ -363,7 +363,7 @@ export default function SchoolDetailsPage() {
 
                   <Link
                     to={applyHref}
-                    className="bg-green-700 hover:bg-green-800 text-white font-medium px-5 py-2.5 rounded-lg text-sm transition-colors"
+                    className="bg-brand hover:bg-brand-strong text-white font-medium px-5 py-2.5 rounded-lg text-sm transition-colors"
                   >
                     Apply Now
                   </Link>
@@ -374,25 +374,25 @@ export default function SchoolDetailsPage() {
               <div className="flex flex-wrap items-center gap-4 mt-3">
                 <div className="flex items-center gap-1.5">
                   <Stars value={Math.round(s.ratingAverage)} />
-                  <span className="font-semibold text-gray-800">{s.ratingAverage.toFixed(1)}</span>
-                  <span className="text-gray-400 text-sm">({s.reviewCount} reviews)</span>
+                  <span className="font-semibold text-foreground">{s.ratingAverage.toFixed(1)}</span>
+                  <span className="text-muted text-sm">({s.reviewCount} reviews)</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {s.curriculum.map((c) => (
                     <span
                       key={c}
-                      className="bg-green-50 text-green-700 text-xs px-2.5 py-1 rounded-full font-medium border border-green-100"
+                      className="bg-brand-soft text-brand text-xs px-2.5 py-1 rounded-full font-medium border border-brand/20"
                     >
                       {c}
                     </span>
                   ))}
-                  <span className="bg-gray-100 text-gray-600 text-xs px-2.5 py-1 rounded-full capitalize">
+                  <span className="bg-background text-muted text-xs px-2.5 py-1 rounded-full capitalize">
                     {s.type}
                   </span>
-                  <span className="bg-gray-100 text-gray-600 text-xs px-2.5 py-1 rounded-full capitalize">
+                  <span className="bg-background text-muted text-xs px-2.5 py-1 rounded-full capitalize">
                     {s.boardingOptions}
                   </span>
-                  <span className="bg-gray-100 text-gray-600 text-xs px-2.5 py-1 rounded-full capitalize">
+                  <span className="bg-background text-muted text-xs px-2.5 py-1 rounded-full capitalize">
                     {s.gender}
                   </span>
                 </div>
@@ -401,15 +401,15 @@ export default function SchoolDetailsPage() {
           </div>
 
           {/* Tabs */}
-          <div className="flex mt-6 border-b border-gray-200 overflow-x-auto">
+          <div className="flex mt-6 border-b border-border overflow-x-auto">
             {TABS.map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={`px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
                   activeTab === tab
-                    ? 'border-green-700 text-green-700'
-                    : 'border-transparent text-gray-500 hover:text-gray-800 hover:border-gray-300'
+                    ? 'border-brand text-brand'
+                    : 'border-transparent text-muted hover:text-foreground hover:border-border'
                 }`}
               >
                 {tab}
@@ -426,9 +426,9 @@ export default function SchoolDetailsPage() {
           <div className="flex-1 min-w-0 space-y-6">
             {activeTab === 'Overview' && (
               <>
-                <div className="bg-white rounded-xl border border-gray-100 p-6">
-                  <h2 className="font-heading font-semibold text-gray-900 mb-3">About {s.name}</h2>
-                  <p className="text-gray-600 leading-relaxed">
+                <div className="bg-surface rounded-xl border border-border p-6">
+                  <h2 className="font-heading font-semibold text-foreground mb-3">About {s.name}</h2>
+                  <p className="text-muted leading-relaxed">
                     {s.description || 'No description available.'}
                   </p>
                 </div>
@@ -446,32 +446,32 @@ export default function SchoolDetailsPage() {
                   ].map(({ icon: Icon, label, value }) => (
                     <div
                       key={label}
-                      className="bg-white rounded-xl border border-gray-100 p-4 text-center"
+                      className="bg-surface rounded-xl border border-border p-4 text-center"
                     >
-                      <Icon className="w-6 h-6 text-green-600 mx-auto mb-2" />
-                      <p className="text-xs text-gray-500">{label}</p>
-                      <p className="font-semibold text-gray-900 text-sm mt-0.5">{value}</p>
+                      <Icon className="w-6 h-6 text-brand mx-auto mb-2" />
+                      <p className="text-xs text-muted">{label}</p>
+                      <p className="font-semibold text-foreground text-sm mt-0.5">{value}</p>
                     </div>
                   ))}
                 </div>
 
                 {announcements.length > 0 && (
-                  <div className="bg-white rounded-xl border border-gray-100 p-6">
-                    <h2 className="font-heading font-semibold text-gray-900 mb-4">
+                  <div className="bg-surface rounded-xl border border-border p-6">
+                    <h2 className="font-heading font-semibold text-foreground mb-4">
                       Latest Announcements
                     </h2>
                     <div className="space-y-3">
                       {announcements.slice(0, 3).map((a) => (
                         <div
                           key={a.id}
-                          className="flex items-start gap-3 p-3 bg-green-50 rounded-lg"
+                          className="flex items-start gap-3 p-3 bg-brand-soft rounded-lg"
                         >
-                          <span className="bg-green-100 text-green-700 text-xs font-semibold px-2 py-1 rounded-full whitespace-nowrap">
+                          <span className="bg-brand-soft text-brand text-xs font-semibold px-2 py-1 rounded-full whitespace-nowrap">
                             {a.category}
                           </span>
                           <div>
-                            <p className="text-sm font-medium text-gray-900">{a.title}</p>
-                            <p className="text-xs text-gray-500 mt-0.5">
+                            <p className="text-sm font-medium text-foreground">{a.title}</p>
+                            <p className="text-xs text-muted mt-0.5">
                               {a.content.slice(0, 100)}...
                             </p>
                           </div>
@@ -485,35 +485,35 @@ export default function SchoolDetailsPage() {
 
             {activeTab === 'Academics' && (
               <div className="space-y-6">
-                <div className="bg-white rounded-xl border border-gray-100 p-6">
-                  <h2 className="font-heading font-semibold text-gray-900 mb-4">
+                <div className="bg-surface rounded-xl border border-border p-6">
+                  <h2 className="font-heading font-semibold text-foreground mb-4">
                     Academic Performance
                   </h2>
                   {academics.length > 0 ? (
                     <div className="overflow-x-auto">
                       <table className="w-full text-sm">
                         <thead>
-                          <tr className="border-b border-gray-100">
-                            <th className="text-left py-2 text-gray-500 font-medium">Year</th>
-                            <th className="text-left py-2 text-gray-500 font-medium">KCPE Mean</th>
-                            <th className="text-left py-2 text-gray-500 font-medium">KCSE Mean</th>
-                            <th className="text-left py-2 text-gray-500 font-medium">
+                          <tr className="border-b border-border">
+                            <th className="text-left py-2 text-muted font-medium">Year</th>
+                            <th className="text-left py-2 text-muted font-medium">KCPE Mean</th>
+                            <th className="text-left py-2 text-muted font-medium">KCSE Mean</th>
+                            <th className="text-left py-2 text-muted font-medium">
                               Subject Strengths
                             </th>
                           </tr>
                         </thead>
                         <tbody>
                           {academics.map((a) => (
-                            <tr key={a.year} className="border-b border-gray-50">
-                              <td className="py-3 font-semibold text-gray-900">{a.year}</td>
-                              <td className="py-3 text-gray-700">{a.kcpeMeanScore || '—'}</td>
-                              <td className="py-3 text-gray-700">{a.kcseMeanScore || '—'}</td>
+                            <tr key={a.year} className="border-b border-border">
+                              <td className="py-3 font-semibold text-foreground">{a.year}</td>
+                              <td className="py-3 text-foreground">{a.kcpeMeanScore || '—'}</td>
+                              <td className="py-3 text-foreground">{a.kcseMeanScore || '—'}</td>
                               <td className="py-3">
                                 <div className="flex flex-wrap gap-1">
                                   {a.subjectStrengths.map((sub) => (
                                     <span
                                       key={sub}
-                                      className="bg-blue-50 text-blue-700 text-xs px-2 py-0.5 rounded-full"
+                                      className="bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-400 text-xs px-2 py-0.5 rounded-full"
                                     >
                                       {sub}
                                     </span>
@@ -526,24 +526,24 @@ export default function SchoolDetailsPage() {
                       </table>
                     </div>
                   ) : (
-                    <p className="text-gray-400 text-sm">No academic records available yet.</p>
+                    <p className="text-muted text-sm">No academic records available yet.</p>
                   )}
                 </div>
 
-                <div className="bg-white rounded-xl border border-gray-100 p-6">
-                  <h2 className="font-heading font-semibold text-gray-900 mb-4">
+                <div className="bg-surface rounded-xl border border-border p-6">
+                  <h2 className="font-heading font-semibold text-foreground mb-4">
                     Staff Information
                   </h2>
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-gray-50 rounded-lg p-4">
-                      <p className="text-xs text-gray-500 mb-1">Teacher:Student Ratio</p>
-                      <p className="font-bold text-gray-900 text-lg">
+                    <div className="bg-background rounded-lg p-4">
+                      <p className="text-xs text-muted mb-1">Teacher:Student Ratio</p>
+                      <p className="font-bold text-foreground text-lg">
                         {s.teacherStudentRatio || '—'}
                       </p>
                     </div>
-                    <div className="bg-gray-50 rounded-lg p-4">
-                      <p className="text-xs text-gray-500 mb-1">Total Students</p>
-                      <p className="font-bold text-gray-900 text-lg">
+                    <div className="bg-background rounded-lg p-4">
+                      <p className="text-xs text-muted mb-1">Total Students</p>
+                      <p className="font-bold text-foreground text-lg">
                         {s.totalStudents?.toLocaleString() || '—'}
                       </p>
                     </div>
@@ -553,8 +553,8 @@ export default function SchoolDetailsPage() {
             )}
 
             {activeTab === 'Facilities' && (
-              <div className="bg-white rounded-xl border border-gray-100 p-6">
-                <h2 className="font-heading font-semibold text-gray-900 mb-5">Facilities</h2>
+              <div className="bg-surface rounded-xl border border-border p-6">
+                <h2 className="font-heading font-semibold text-foreground mb-5">Facilities</h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                   {[
                     'Science Laboratory',
@@ -581,24 +581,24 @@ export default function SchoolDetailsPage() {
                         key={facility}
                         className={`flex items-center gap-3 p-3 rounded-lg border ${
                           available
-                            ? 'bg-green-50 border-green-100'
-                            : 'bg-gray-50 border-gray-100 opacity-50'
+                            ? 'bg-brand-soft border-brand/20'
+                            : 'bg-background border-border opacity-50'
                         }`}
                       >
                         <Icon
                           className={`w-4 h-4 shrink-0 ${
-                            available ? 'text-green-600' : 'text-gray-400'
+                            available ? 'text-brand' : 'text-muted'
                           }`}
                         />
                         <span
-                          className={`text-sm ${available ? 'text-gray-800' : 'text-gray-400'}`}
+                          className={`text-sm ${available ? 'text-foreground' : 'text-muted'}`}
                         >
                           {facility}
                         </span>
                         {available ? (
-                          <CheckCircle className="w-4 h-4 text-green-500 ml-auto shrink-0" />
+                          <CheckCircle className="w-4 h-4 text-brand ml-auto shrink-0" />
                         ) : (
-                          <X className="w-4 h-4 text-gray-300 ml-auto shrink-0" />
+                          <X className="w-4 h-4 text-muted ml-auto shrink-0" />
                         )}
                       </div>
                     )
@@ -609,8 +609,8 @@ export default function SchoolDetailsPage() {
 
             {activeTab === 'Fees' && (
               <div className="space-y-5">
-                <div className="bg-white rounded-xl border border-gray-100 p-6">
-                  <h2 className="font-heading font-semibold text-gray-900 mb-5">Fee Structure</h2>
+                <div className="bg-surface rounded-xl border border-border p-6">
+                  <h2 className="font-heading font-semibold text-foreground mb-5">Fee Structure</h2>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                     {[
                       {
@@ -630,21 +630,21 @@ export default function SchoolDetailsPage() {
                         value: `KES ${s.fees.uniformEstimate.toLocaleString()}`,
                       },
                     ].map(({ label, value }) => (
-                      <div key={label} className="bg-gray-50 rounded-lg p-4">
-                        <p className="text-xs text-gray-500 mb-1">{label}</p>
-                        <p className="font-bold text-gray-900">{value}</p>
+                      <div key={label} className="bg-background rounded-lg p-4">
+                        <p className="text-xs text-muted mb-1">{label}</p>
+                        <p className="font-bold text-foreground">{value}</p>
                       </div>
                     ))}
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-700 mb-2">
+                    <p className="text-sm font-medium text-foreground mb-2">
                       Payment Methods Accepted
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {s.fees.paymentMethods.map((m) => (
                         <span
                           key={m}
-                          className="bg-green-50 text-green-700 border border-green-100 text-sm px-3 py-1 rounded-full"
+                          className="bg-brand-soft text-brand border border-brand/20 text-sm px-3 py-1 rounded-full"
                         >
                           {m}
                         </span>
@@ -654,21 +654,21 @@ export default function SchoolDetailsPage() {
                 </div>
 
                 {s.transport.available && (
-                  <div className="bg-white rounded-xl border border-gray-100 p-6">
-                    <h2 className="font-heading font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                      <Bus className="w-5 h-5 text-green-600" />
+                  <div className="bg-surface rounded-xl border border-border p-6">
+                    <h2 className="font-heading font-semibold text-foreground mb-4 flex items-center gap-2">
+                      <Bus className="w-5 h-5 text-brand" />
                       Transport
                     </h2>
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-gray-50 rounded-lg p-4">
-                        <p className="text-xs text-gray-500 mb-1">Monthly Cost</p>
-                        <p className="font-bold text-gray-900">
+                      <div className="bg-background rounded-lg p-4">
+                        <p className="text-xs text-muted mb-1">Monthly Cost</p>
+                        <p className="font-bold text-foreground">
                           KES {s.transport.monthlyCost.toLocaleString()}
                         </p>
                       </div>
-                      <div className="bg-gray-50 rounded-lg p-4">
-                        <p className="text-xs text-gray-500 mb-1">Routes</p>
-                        <p className="text-sm text-gray-700">{s.transport.routes}</p>
+                      <div className="bg-background rounded-lg p-4">
+                        <p className="text-xs text-muted mb-1">Routes</p>
+                        <p className="text-sm text-foreground">{s.transport.routes}</p>
                       </div>
                     </div>
                   </div>
@@ -678,11 +678,11 @@ export default function SchoolDetailsPage() {
 
             {activeTab === 'Reviews' && (
               <div className="space-y-5">
-                <div className="bg-white rounded-xl border border-gray-100 p-6">
+                <div className="bg-surface rounded-xl border border-border p-6">
                   <div className="flex items-start justify-between mb-5">
                     <div>
-                      <h2 className="font-heading font-semibold text-gray-900">Reviews</h2>
-                      <p className="text-sm text-gray-500 mt-0.5">{s.reviewCount} reviews</p>
+                      <h2 className="font-heading font-semibold text-foreground">Reviews</h2>
+                      <p className="text-sm text-muted mt-0.5">{s.reviewCount} reviews</p>
                     </div>
                     <button
                       onClick={() =>
@@ -692,26 +692,26 @@ export default function SchoolDetailsPage() {
                               state: { from: { pathname: `/schools/${s.id}` } },
                             })
                       }
-                      className="bg-green-700 hover:bg-green-800 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+                      className="bg-brand hover:bg-brand-strong text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
                     >
                       Write a Review
                     </button>
                   </div>
                   <div className="flex items-center gap-6">
                     <div className="text-center">
-                      <p className="font-heading font-bold text-5xl text-gray-900">
+                      <p className="font-heading font-bold text-5xl text-foreground">
                         {s.ratingAverage.toFixed(1)}
                       </p>
                       <Stars value={Math.round(s.ratingAverage)} size="md" />
-                      <p className="text-xs text-gray-400 mt-1">out of 5</p>
+                      <p className="text-xs text-muted mt-1">out of 5</p>
                     </div>
                   </div>
                 </div>
 
                 {reviews.length === 0 ? (
-                  <div className="text-center py-12 bg-white rounded-xl border border-gray-100">
-                    <Star className="w-10 h-10 text-gray-200 mx-auto mb-3" />
-                    <p className="text-gray-500 text-sm">
+                  <div className="text-center py-12 bg-surface rounded-xl border border-border">
+                    <Star className="w-10 h-10 text-muted mx-auto mb-3" />
+                    <p className="text-muted text-sm">
                       No reviews yet. Be the first to review this school.
                     </p>
                   </div>
@@ -726,10 +726,10 @@ export default function SchoolDetailsPage() {
             )}
 
             {activeTab === 'Gallery' && (
-              <div className="bg-white rounded-xl border border-gray-100 p-6">
-                <h2 className="font-heading font-semibold text-gray-900 mb-5">Photo Gallery</h2>
+              <div className="bg-surface rounded-xl border border-border p-6">
+                <h2 className="font-heading font-semibold text-foreground mb-5">Photo Gallery</h2>
                 {s.gallery.length === 0 ? (
-                  <p className="text-gray-400 text-sm text-center py-10">
+                  <p className="text-muted text-sm text-center py-10">
                     No photos available yet.
                   </p>
                 ) : (
@@ -756,23 +756,23 @@ export default function SchoolDetailsPage() {
 
           {/* Sidebar */}
           <aside className="hidden lg:block w-72 shrink-0 space-y-5">
-            <div className="bg-white rounded-xl border border-gray-100 p-5 space-y-3">
-              <h3 className="font-heading font-semibold text-gray-900">Contact School</h3>
+            <div className="bg-surface rounded-xl border border-border p-5 space-y-3">
+              <h3 className="font-heading font-semibold text-foreground">Contact School</h3>
               {s.phone && (
                 <a
                   href={telHref}
-                  className="flex items-center gap-3 text-sm text-gray-700 hover:text-green-700 transition-colors"
+                  className="flex items-center gap-3 text-sm text-foreground hover:text-brand transition-colors"
                 >
-                  <Phone className="w-4 h-4 text-green-600" />
+                  <Phone className="w-4 h-4 text-brand" />
                   {s.phone}
                 </a>
               )}
               {s.email && (
                 <a
                   href={mailHref}
-                  className="flex items-center gap-3 text-sm text-gray-700 hover:text-green-700 transition-colors"
+                  className="flex items-center gap-3 text-sm text-foreground hover:text-brand transition-colors"
                 >
-                  <Mail className="w-4 h-4 text-green-600" />
+                  <Mail className="w-4 h-4 text-brand" />
                   {s.email}
                 </a>
               )}
@@ -781,9 +781,9 @@ export default function SchoolDetailsPage() {
                   href={s.website}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-3 text-sm text-gray-700 hover:text-green-700 transition-colors"
+                  className="flex items-center gap-3 text-sm text-foreground hover:text-brand transition-colors"
                 >
-                  <Globe className="w-4 h-4 text-green-600" />
+                  <Globe className="w-4 h-4 text-brand" />
                   Visit Website
                 </a>
               )}
@@ -792,9 +792,9 @@ export default function SchoolDetailsPage() {
                   href={mapsHref}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-3 text-sm text-gray-700 hover:text-green-700 transition-colors"
+                  className="flex items-center gap-3 text-sm text-foreground hover:text-brand transition-colors"
                 >
-                  <MapPin className="w-4 h-4 text-green-600" />
+                  <MapPin className="w-4 h-4 text-brand" />
                   Open in Google Maps
                 </a>
               )}
@@ -812,26 +812,26 @@ export default function SchoolDetailsPage() {
 
               <Link
                 to={enquiryHref}
-                className="flex items-center justify-center gap-2 border border-green-700 text-green-700 hover:bg-green-50 text-sm font-medium w-full py-2.5 rounded-lg transition-colors"
+                className="flex items-center justify-center gap-2 border border-brand text-brand hover:bg-brand-soft text-sm font-medium w-full py-2.5 rounded-lg transition-colors"
               >
                 Send Enquiry
               </Link>
               <Link
                 to={visitHref}
-                className="flex items-center justify-center gap-2 border border-gray-200 text-gray-700 hover:bg-gray-50 text-sm font-medium w-full py-2.5 rounded-lg transition-colors"
+                className="flex items-center justify-center gap-2 border border-border text-foreground hover:bg-background text-sm font-medium w-full py-2.5 rounded-lg transition-colors"
               >
                 Request a Visit
               </Link>
               <Link
                 to={questionHref}
-                className="flex items-center justify-center gap-2 border border-gray-200 text-gray-700 hover:bg-gray-50 text-sm font-medium w-full py-2.5 rounded-lg transition-colors"
+                className="flex items-center justify-center gap-2 border border-border text-foreground hover:bg-background text-sm font-medium w-full py-2.5 rounded-lg transition-colors"
               >
                 Ask a Question
               </Link>
             </div>
 
-            <div className="bg-white rounded-xl border border-gray-100 p-5 space-y-3">
-              <h3 className="font-heading font-semibold text-gray-900">Quick Info</h3>
+            <div className="bg-surface rounded-xl border border-border p-5 space-y-3">
+              <h3 className="font-heading font-semibold text-foreground">Quick Info</h3>
               {[
                 { label: 'Founded', value: String(s.foundedYear || '—') },
                 { label: 'Religion', value: s.religion },
@@ -842,15 +842,15 @@ export default function SchoolDetailsPage() {
                 },
               ].map(({ label, value }) => (
                 <div key={label} className="flex justify-between text-sm">
-                  <span className="text-gray-500">{label}</span>
-                  <span className="text-gray-900 font-medium capitalize">{value || '—'}</span>
+                  <span className="text-muted">{label}</span>
+                  <span className="text-foreground font-medium capitalize">{value || '—'}</span>
                 </div>
               ))}
             </div>
 
             {nearbySchools.length > 0 && (
-              <div className="bg-white rounded-xl border border-gray-100 p-5">
-                <h3 className="font-heading font-semibold text-gray-900 mb-4">Nearby Schools</h3>
+              <div className="bg-surface rounded-xl border border-border p-5">
+                <h3 className="font-heading font-semibold text-foreground mb-4">Nearby Schools</h3>
                 <div className="space-y-3">
                   {nearbySchools.map((ns) => {
                     const nsHref = `/schools/${ns.id}`
@@ -858,9 +858,9 @@ export default function SchoolDetailsPage() {
                       <Link
                         key={ns.id}
                         to={nsHref}
-                        className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition-colors"
+                        className="flex items-center gap-3 p-2 rounded-lg hover:bg-background transition-colors"
                       >
-                        <div className="w-10 h-10 rounded-lg overflow-hidden bg-gray-100 shrink-0">
+                        <div className="w-10 h-10 rounded-lg overflow-hidden bg-background shrink-0">
                           {ns.coverImage ? (
                             <img
                               src={ns.coverImage}
@@ -868,21 +868,21 @@ export default function SchoolDetailsPage() {
                               className="w-full h-full object-cover"
                             />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-green-100 text-green-700 font-bold text-sm">
+                            <div className="w-full h-full flex items-center justify-center bg-brand-soft text-brand font-bold text-sm">
                               {ns.name.charAt(0)}
                             </div>
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900 truncate">{ns.name}</p>
+                          <p className="text-sm font-medium text-foreground truncate">{ns.name}</p>
                           <div className="flex items-center gap-1">
                             <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-                            <span className="text-xs text-gray-500">
+                            <span className="text-xs text-muted">
                               {ns.ratingAverage.toFixed(1)}
                             </span>
                           </div>
                         </div>
-                        <ChevronRight className="w-4 h-4 text-gray-300 shrink-0" />
+                        <ChevronRight className="w-4 h-4 text-muted shrink-0" />
                       </Link>
                     )
                   })}

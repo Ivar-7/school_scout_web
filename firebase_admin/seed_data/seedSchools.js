@@ -7,7 +7,7 @@
 const admin = require('firebase-admin')
 const schools = require('./schools.json')
 
-const serviceAccount = require('../react-abcederian-firebase-adminsdk-pe237-016500133e.json')
+const serviceAccount = require('../react-abcederian-firebase-adminsdk.json')
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
