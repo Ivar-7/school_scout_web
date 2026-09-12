@@ -47,7 +47,7 @@ export default function RegisterPage() {
         </p>
         <h1 className="mt-3 text-2xl font-semibold text-foreground">Create your account</h1>
         <p className="mt-2 text-sm text-muted">
-          Join School Finder as a parent or list your school.
+          Join Elimu Connect as a parent or list your school.
         </p>
 
         <form className="mt-6 space-y-4" onSubmit={handleSubmit(onSubmit)}>

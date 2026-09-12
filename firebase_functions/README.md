@@ -1,6 +1,6 @@
-# Firebase Cloud Functions — School Finder
+# Firebase Cloud Functions — Elimu Connect
 
-This directory contains all Firebase Cloud Functions for School Finder, written in **TypeScript** using **Firebase Functions v2**. They handle M-Pesa payment initiation/confirmation via [PayHero](https://payhero.co.ke), and server-side business logic that the client isn't allowed to perform directly (security rules block these writes from the client on purpose).
+This directory contains all Firebase Cloud Functions for Elimu Connect, written in **TypeScript** using **Firebase Functions v2**. They handle M-Pesa payment initiation/confirmation via [PayHero](https://payhero.co.ke), and server-side business logic that the client isn't allowed to perform directly (security rules block these writes from the client on purpose).
 
 ---
 

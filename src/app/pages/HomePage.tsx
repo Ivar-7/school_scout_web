@@ -81,7 +81,7 @@ export default function HomePage() {
       <section className="border-b border-border bg-gradient-to-b from-brand-soft to-background">
         <div className="mx-auto max-w-5xl px-6 py-16 text-center sm:py-24">
           <p className="text-sm font-semibold uppercase tracking-[0.35em] text-brand-strong">
-            School Finder
+            Elimu Connect
           </p>
           <h1 className="mt-4 text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
             Find, compare, and apply to the right school

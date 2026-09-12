@@ -44,7 +44,7 @@ export const useSubscription = () => {
         profile?.role ?? 'parent',
         amount,
         mpesaPhone,
-        `School Finder ${tier.charAt(0).toUpperCase() + tier.slice(1)} - 1 Month`
+        `Elimu Connect ${tier.charAt(0).toUpperCase() + tier.slice(1)} - 1 Month`
       )
 
       setAwaitingMpesa(true)

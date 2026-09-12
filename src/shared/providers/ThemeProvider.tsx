@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { ThemeContext, type EffectiveTheme, type ThemePreference } from './theme.context'
 
-const STORAGE_KEY = 'school-finder-theme'
+const STORAGE_KEY = 'elimu-connect-theme'
 
 function getSystemTheme(): EffectiveTheme {
   if (typeof window === 'undefined') return 'light'

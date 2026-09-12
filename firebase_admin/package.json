@@ -1,0 +1,7 @@
+{
+  "name": "firebase_admin",
+  "private": true,
+  "scripts": {
+    "seed": "npm --prefix seed_data run seed:schools"
+  }
+}

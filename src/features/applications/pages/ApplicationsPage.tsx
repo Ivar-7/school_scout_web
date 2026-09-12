@@ -27,7 +27,7 @@ const EmptyState = ({ onNew }: { onNew: () => void }) => (
     </div>
     <h3 className="font-heading font-semibold text-gray-900 text-lg mb-2">No applications yet</h3>
     <p className="text-gray-500 text-sm max-w-sm mb-6">
-      Browse schools and apply directly through SchoolScout. Track all your applications here.
+      Browse schools and apply directly through Elimu Connect. Track all your applications here.
     </p>
     <div className="flex gap-3">
       <a

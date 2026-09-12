@@ -44,7 +44,7 @@ export function AppShell({ children }: AppShellProps) {
           <div className="flex items-center justify-between gap-4">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.35em] text-brand-strong">
-                School Finder
+                Elimu Connect
               </p>
               <h1 className="mt-1 text-lg font-semibold text-foreground">Find the right school</h1>
             </div>

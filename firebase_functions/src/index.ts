@@ -6,7 +6,7 @@ admin.initializeApp();
 export { startPayheroPayment } from "./payments/startPayheroPayment.js";
 export { payheroCallback, checkPaymentStatus } from "./payments/confirmPayheroPayment.js";
 
-// ── App triggers (School Finder business logic) ───────────────────────────────
+// ── App triggers (Elimu Connect business logic) ───────────────────────────────
 export { onPaymentConfirmed } from "./app/onPaymentConfirmed.js";
 export { cancelSubscription } from "./app/cancelSubscription.js";
 export { expireSubscriptions } from "./app/expireSubscriptions.js";
