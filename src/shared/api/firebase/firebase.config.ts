@@ -8,6 +8,6 @@ export const firebaseConfig: FirebaseOptions = {
   storageBucket: firebaseEnv.storageBucket,
   messagingSenderId: firebaseEnv.messagingSenderId,
   appId: firebaseEnv.appId,
-  measurementId: firebaseEnv.measurementId,
-  databaseURL: firebaseEnv.databaseURL,
+  ...(firebaseEnv.measurementId ? { measurementId: firebaseEnv.measurementId } : {}),
+  ...(firebaseEnv.databaseURL ? { databaseURL: firebaseEnv.databaseURL } : {}),
 }

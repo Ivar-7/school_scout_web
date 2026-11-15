@@ -1,53 +1,37 @@
-# React + Vite + TypeScript — Agentic Rules
+# React + Vite + TypeScript
 
 ## Architecture
 
-- **`src/app/`** — Core application setup and global configuration.
-- **`src/shared/`** — Reusable primitives: `api`, `components`, `hooks`, `theme`, `types`, `utils`, `store`, `providers`.
-- **`src/features/<feature>/`** — Domain-driven modules: `api`, `services`, `hooks`, `widgets`, `pages`, `types`.
-- **Root Files** — `App.tsx`, `main.tsx`, `routes.tsx`.
-- **Directive** — Keep the codebase strictly modular, layered, and DRY.
-
----
+- **Application** — `src/app/`: application providers and layouts.
+- **Features** — `src/features/<feature>/`: pages, components, state, and api folders.
+- **Shared** — `src/shared/`: reusable UI, HTTP infrastructure, hooks, and utilities.
 
 ## Core Rules
 
-- **API Layer** — `src/shared/api/` manages the HTTP client, auth interceptors, and error normalization.
-- **Page Isolation** — `*.Page.tsx` files act strictly as state/layout orchestrators. Fetch data, wire hooks, and pass props down to widgets.
-- **Naming Conventions** — Enforce exact patterns: `*.types.ts`, `*.schema.ts`, `*Provider.tsx`, `*Page.tsx`, `use<Feature>.ts`.
-- **Routing** — Utilize object-based React Router configurations with route-level lazy loading.
-- **Error Handling** — Implement Error Boundaries combined with an `ErrorHandler` (strictly no UI stack traces).
-- **Security & Cleanliness** — Zero hardcoded secrets (maintain `.env.example`). No dead code or unjustified linter suppressions.
-- **Documentation** — Keep per-feature `README.md` files updated with every change.
+- **Types** — Enable TypeScript strict mode and use no `any`.
+- **Boundaries** — Keep pages focused on route composition and feature components focused on one concern.
+- **Data** — Keep remote data separate from local interaction state.
+- **Validation** — Validate external data at API and form boundaries.
+- **Routing** — Lazy-load route modules.
 
----
+## Project Conventions
 
-## Firebase
+- **Naming** — Use `*.api.ts`, `*.keys.ts`, `*.types.ts`, `*.schema.ts`, `*Provider.tsx`, `*Page.tsx`, and `use<Thing>.ts`.
+- **Firebase** — Use authorization rules only; create required indexes; deploy rule and index changes.
+- **Errors** — Use `src/shared/errors/` for normalized application errors, user messages, and diagnostic logging; never show raw errors to users.
+- **Environment** — Maintain `.env.example`; expose only public configuration through `VITE_` variables.
+- **Secrets** — Store no secrets in source or client environment files.
+- **Code** — Remove dead code, no linter suppressions.
+- **Documentation** — Maintain a minimal README for every feature.
+- **Design** — Use Tailwind classes only and no arbitrary values.
+- **Theme** — Support light and dark themes everywhere.
+- **Motion** — Use Motion only for transitions and feedback.
+- **States** — Handle loading, empty, success, and error in every feature.
 
-- **Architecture**: Firebase config (rules, indexes) in src/config/firebsase.
-- **Rules**: Authorization-focused rules. Application code manages schema and business logic.
-- **Performance**: Indexes deliberately small to keep cost/latency low.
-- **Deploy**: Deploy indexes rules and functions if any changes.
+## Verification
 
----
+- **Checks** — Run `npm run format`, `npm run lint`, `npm run typecheck`, and `npm run build`; fix failures.
 
-## UI/UX
+## Canary
 
-- **Design Tokens** — Use CSS variables/Tailwind classes only. **No arbitrary values** (e.g., no `h-[13px]`).
-- **Theming** — Full, seamless light/dark theme support.
-- **Motion** — Use Framer Motion exclusively for purposeful, UX-driven animations.
-- **Component States** — Every feature must explicitly handle 4 states: `loading`, `empty`, `success`, and `error`.
-- **Layouts** — Use reusable layouts mounted at the route level.
-
----
-
-## Verification Pipeline
-
-Run this sequence after every change before pushing code:
-
-```bash
-npm run format
-npm run lint
-npm run typecheck
-npm run build
-```
+End final response with: `[canary: ok]`

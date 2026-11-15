@@ -1,7 +1,7 @@
 export { firebaseApp } from './firebase.app'
 export { firebaseAuth } from './firebase.auth'
 export { firebaseConfig } from './firebase.config'
-export { firebaseEnv } from './firebase.env'
+export { firebaseEnv, getFirebaseEnv, type FirebaseEnv } from './firebase.env'
 export { firebaseFirestore } from './firebase.firestore'
 export { firebaseFunctions } from './firebase.functions'
 export { firebaseStorage } from './firebase.storage'
