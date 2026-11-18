@@ -1,23 +1,39 @@
 /**
- * Seeds the `schools` Firestore collection with real, publicly-documented
- * Kenyan schools (see schools.json). Unconfirmed per-school details (phone,
- * email, exact address, images, head teacher) are left blank rather than
- * invented. Run: node seedSchools.js
+ * Upserts the Kenyan school directory and its cover images into Firestore.
+ * Existing seeded school document IDs are preserved so saved references keep
+ * working. New entries use stable slug IDs, making repeated runs idempotent.
+ * Run from the repository root: npm --prefix firebase_admin run seed
  */
 const admin = require('firebase-admin')
 const schools = require('./schools.json')
+const coverImages = require('./coverImages.json')
+const serviceAccount = require('../schoolfinder-97617-firebase-adminsdk-fbsvc-38213ff99f.json')
 
-const serviceAccount = require('../react-abcederian-firebase-adminsdk.json')
+const PROJECT_ID = 'schoolfinder-97617'
+const SCHOOLS_COLLECTION = 'schools'
+
+if (serviceAccount.project_id !== PROJECT_ID) {
+  throw new Error(`Expected Firebase Admin credentials for ${PROJECT_ID}.`)
+}
+
+const missingCoverImages = schools
+  .filter(
+    (school) => typeof coverImages[school.name] !== 'string' || !coverImages[school.name].trim()
+  )
+  .map((school) => school.name)
+
+if (missingCoverImages.length > 0) {
+  throw new Error(`Missing cover image mappings for: ${missingCoverImages.join(', ')}`)
+}
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
+  projectId: PROJECT_ID,
 })
 
 const db = admin.firestore()
 
 // Ministry of Education published fee-cap guideline tiers (KES per term).
-// Private/international schools and universities set their own fees, which
-// aren't publicly standardised, so those are left at 0 rather than guessed.
 const FEE_TIERS = {
   national: { minTermFee: 45000, maxTermFee: 53554, admissionFee: 2000, uniformEstimate: 8000 },
   extraCounty: { minTermFee: 35000, maxTermFee: 40535, admissionFee: 1500, uniformEstimate: 6000 },
@@ -61,14 +77,51 @@ const slugify = (name) =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '')
 
+const filePathUrl = (filename) =>
+  `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(filename)}`
+
 async function seed() {
+  const collection = db.collection(SCHOOLS_COLLECTION)
+  const snapshot = await collection.get()
+  const existingByName = new Map()
+  const existingById = new Map(snapshot.docs.map((doc) => [doc.id, doc]))
+
+  for (const doc of snapshot.docs) {
+    const name = doc.data().name
+    if (!schools.some((school) => school.name === name)) continue
+    const matches = existingByName.get(name) ?? []
+    matches.push(doc)
+    existingByName.set(name, matches)
+  }
+
+  const duplicates = [...existingByName.entries()]
+    .filter(([, docs]) => docs.length > 1)
+    .map(([name]) => name)
+
+  if (duplicates.length > 0) {
+    throw new Error(`Duplicate seeded school documents found for: ${duplicates.join(', ')}`)
+  }
+
+  const idCollisions = schools.filter((school) => {
+    if (existingByName.has(school.name)) return false
+    const collision = existingById.get(slugify(school.name))
+    return collision !== undefined && collision.data().name !== school.name
+  })
+
+  if (idCollisions.length > 0) {
+    throw new Error(
+      `Stable school IDs already belong to other records: ${idCollisions.map((school) => school.name).join(', ')}`
+    )
+  }
+
   const batch = db.batch()
-  const collection = db.collection('schools')
   const now = admin.firestore.Timestamp.now()
 
   for (const school of schools) {
+    const existing = existingByName.get(school.name)?.[0]
+    const docRef = existing?.ref ?? collection.doc(slugify(school.name))
     const fees = feesFor(school)
-    const docRef = collection.doc()
+
     batch.set(docRef, {
       ownerId: null,
       name: school.name,
@@ -87,7 +140,7 @@ async function seed() {
       isVerified: false,
       isFeatured: false,
       subscriptionTier: 'free',
-      coverImage: '',
+      coverImage: filePathUrl(coverImages[school.name]),
       logoImage: '',
       gallery: [],
       ratingAverage: 0,
@@ -107,18 +160,18 @@ async function seed() {
       socialMedia: { facebook: '', instagram: '', twitter: '' },
       fees: { ...fees, paymentMethods: ['M-Pesa', 'Bank Transfer'] },
       transport: { available: false, routes: '', monthlyCost: 0 },
-      createdAt: now,
+      createdAt: existing?.data().createdAt ?? now,
       updatedAt: now,
     })
   }
 
   await batch.commit()
-  console.log(`Seeded ${schools.length} schools into Firestore.`)
+  console.log(`Seeded ${schools.length} schools with cover images into ${PROJECT_ID}.`)
 }
 
 seed()
   .then(() => process.exit(0))
-  .catch((err) => {
-    console.error('Seeding failed:', err)
+  .catch((error) => {
+    console.error('Seeding failed:', error)
     process.exit(1)
   })

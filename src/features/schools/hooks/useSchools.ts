@@ -29,7 +29,8 @@ export const useSchools = (filters: Partial<SchoolFilters> = {}) => {
         setSchools((prev) => (reset ? result.schools : [...prev, ...result.schools]))
         setLastDoc(result.lastDoc)
         setHasMore(result.schools.length === 12)
-      } catch {
+      } catch (error) {
+        console.error('Failed to load schools:', error)
         setError('Failed to load schools. Please try again.')
       } finally {
         setLoading(false)
